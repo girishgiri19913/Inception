@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Route</title>
+  <style>
+    /*table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }*/
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .form-label {
+      width: 180px;
+      text-align: left;
+      padding-right: 10px;
+    }
+
+    .form-input {
+      flex-grow: 3;
+      text-align: center;
+    }
+    label{ 
+        width: 160px;
+        display: inline-block;
+    }
+   
+  </style>
+</head>
+<body>
+  <h2>Route Table</h2>
+  <form id="registration-form" onsubmit="addEntry(event)">
+   
+
+    
+    <label for="prefix">Prefix:</label>
+    <input type="text" id="prefix" name="prefix" oninput="restrictToAlphabets(event)" required>
+    <span class="error-message">Only 3 alphanumeric values are allowed to be entered.</span><br><br>
+
+    <label for="catogary">Catogary:</label>
+    <select id="catogary" name="catogary" required>
+      <span class="error-message">Select any one of the following.</span>
+      <option value="">Select an option</option>
+      <option value="main">Main</option>
+      <option value="cos">Cos</option>
+      <option value="block">Block</option>
+      <option value="1P">1P</option>
+      <option value="2P">2P</option>
+      <option value="dist">Dist</option>
+    </select>
+    <span class="error-message">Please select an option from the list.</span><br><br>  
+
+
+    </select><br><br>
+
+
+    <label for="s-signal">S-Signal:</label>
+    <input type="number" id="s-signal" name="s-signal" oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers from 1 to 999 are allowed to be entered.</span><br><br>
+
+    <label for="x-signal">X-Signal:</label>
+    <input type="number" id="x-signal" name="x-signal" oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers from 1 to 999 are allowed to be entered.</span><br><br>
+  
+
+    <label for="g-button">G-Button:</label>
+    <input type="text" id="g-button" name="g-button" oninput="restrictToAlphabets3(event)"  required>
+    <span class="error-message">Only  3 alphanumeric values are allowed to be entered.</span><br><br>
+
+    <label for="route">Route:</label>
+    <input type="text" id="route" name="route" oninput="restrictToRoute(event)"  required>
+    <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
+
+    <label for="u-route">U-Route:</label>
+    <input type="text" id="u-route" name="u-route" oninput="restrictToRoute(event)"  required>
+    <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
+
+    <label for="number-input-yu">Number Input YU:</label>
+    <input type="number" id="number-input-yu" name="number-input-yu" oninput="restrictNegativeAndMoreThan999(event)" required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
+    <label for="option-input-yu">Option Input YU:</label>
+    <select id="option-input-yu" name="option-input-yu">
+      <option value="">Select an option</option>
+      <option value="YU">YU</option>
+      <option value="Y">Y</option>
+      <option value="YY">YY</option>
+      <option value="G">G</option>
+      <option value="R">R</option>
+    </select><br><br>
+
+
+    
+    <label for="number-input-y">Number Input Y:</label>
+    <input type="number" id="number-input-y" name="number-input-y"  oninput="restrictNegativeAndMoreThan999(event)" required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
+    <label for="option-input-y">Option Input Y:</label>
+    <select id="option-input-y" name="option-input-y">
+      <option value="">Select an option</option>
+      <option value="YU">YU</option>
+      <option value="Y">Y</option>
+      <option value="YY">YY</option>
+      <option value="G">G</option>
+      <option value="R">R</option>
+    </select><br><br>
+
+
+    <label for="number-input-yy">Number Input YY:</label>
+    <input type="number" id="number-input-yy" name="number-input-y"  oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
+    <label for="option-input-yy">Option Input YY:</label>
+    <select id="option-input-yy" name="option-input-yy">
+      <option value="">Select an option</option>
+      <option value="YU">YU</option>
+      <option value="Y">Y</option>
+      <option value="YY">YY</option>
+      <option value="G">G</option>
+      <option value="R">R</option>
+    </select><br><br>
+
+
+    <label for="number-input-g">Number Input G:</label>
+    <input type="number" id="number-input-g" name="number-input-g"  oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
+    <label for="option-input-g">Option Input G:</label>
+    <select id="option-input-g" name="option-input-g">
+      <option value="">Select an option</option>
+      <option value="YU">YU</option>
+      <option value="Y">Y</option>
+      <option value="YY">YY</option>
+      <option value="G">G</option>
+      <option value="R">R</option>
+    </select><br><br>
+
+
+  
+
+
+
+
+
+
+    <input type="submit" value="Submit">
+  </form>
+
+  <h2>Registered Entries</h2>
+  <table id="entries-table">
+    <tr>
+      <th>ID</th>
+      <th>Prefix</th>
+      <th>Catogary</th>
+      <th>S-Siganl</th>
+      <th>X-Signal</th>
+      <th>G-Button</th>
+      <th>Route</th>
+      <th>U-Route</th>
+      <th>YU</th>
+      <th>Y</th>
+      <th>YY</th>
+      <th>G</th>
+
+
+
+
+
+
+      
+
+
+
+    </tr>
+  </table>
+
+  <script>
+      var ids = []
+      var id = 0
+      
+      
+     function restrictNegativeAndMoreThan999(event) {
+         console.log(event)
+         var input = event.target;
+         var inputValue = event.target.value;
+         
+         if(inputValue > 999 || inputValue < 0) {
+            input.value = inputValue.substring(0,inputValue.length-1);
+            
+         }
+     }
+      
+    function restrictToAlphabets(event) {
+        var input = event.target;
+        var inputValue = input.value;
+        var alphabetsOnly = /^[a-zA-Z]+$/;
+
+        if (!inputValue.match(alphabetsOnly)) {
+          input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+        }
+        
+        // Restrict the input length to 5 characters
+        if (input.value.length > 5) {
+          input.value = input.value.slice(0, 5);
+        }
+      }
+
+    function restrictToAlphabets3(event) {
+        var input = event.target;
+        var inputValue = input.value;
+        var alphabetsOnly = /^[a-zA-Z]+$/;
+
+        if (!inputValue.match(alphabetsOnly)) {
+          input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+        }
+        
+        // Restrict the input length to 5 characters
+        if (input.value.length > 3) {
+          input.value = input.value.slice(0, 3);
+        }
+      }
+
+
+      function restrictToRoute(event) {
+      var input = event.target;
+      var inputValue = input.value;
+      var routePattern = /^[a-zA-Z0-9\s-]+$/;
+
+      if (!inputValue.match(routePattern)) {
+        input.value = input.value.replace(/[^a-zA-Z0-9\s-]/g, '');
+      }
+
+      // Restrict the input length to 15 characters
+      if (input.value.length > 15) {
+        input.value = input.value.slice(0, 15);
+      }
+    }
+    
+    function addEntry(event) {
+      event.preventDefault();
+      
+      // Retrieve form values
+      id = id + 1
+      var prefix =document.getElementById('prefix').value;
+      var catogary = document.getElementById('catogary').value;
+      
+      var sSiganl =document.getElementById('s-signal').value;
+      var xSiganl =document.getElementById('x-signal').value;
+      var gButton =document.getElementById('g-button').value;
+      var route =document.getElementById('route').value;
+      var uRoute =document.getElementById('u-route').value;
+      var numberInputYU = document.getElementById('number-input-yu').value;
+      var optionInputYU = document.getElementById('option-input-yu').value;
+      var numberInputY = document.getElementById('number-input-y').value;
+      var optionInputY = document.getElementById('option-input-y').value;
+      var numberInputYY = document.getElementById('number-input-yy').value;
+      var optionInputYY = document.getElementById('option-input-yy').value;
+      var numberInputG= document.getElementById('number-input-g').value;
+      var optionInputG = document.getElementById('option-input-g').value;
+
+
+      
+      // Append values to the table
+      var table = document.getElementById('entries-table');
+      var newRow = table.insertRow(-1);
+      var cell1 = newRow.insertCell(0);
+      var cell2 = newRow.insertCell(1);
+      var cell3 = newRow.insertCell(2);
+      var cell4 = newRow .insertCell(3);
+      var cell5 = newRow .insertCell(4);
+      var cell6 = newRow .insertCell(5);
+      var cell7= newRow .insertCell(6);
+      var cell8= newRow .insertCell(7);
+      var cell9 = newRow.insertCell(8);
+      var cell10= newRow.insertCell(9);
+      var cell11= newRow.insertCell(10);
+      var cell12= newRow.insertCell(11);
+
+
+
+
+      // Combine the two input values
+      var YU = numberInputYU;
+      if (optionInputYU) {
+       YU += optionInputYU;
+      }
+
+      var Y = numberInputY;
+      if (optionInputY) {
+       Y += optionInputY;
+      }
+
+      var YY = numberInputYY;
+      if (optionInputYY) {
+       YY += optionInputYY;
+      }
+
+      var G = numberInputG;
+      if (optionInputG) {
+       G += optionInputG;
+      }
+
+
+
+
+      cell1.innerHTML = id;
+      cell2.innerHTML = prefix;
+      cell3.innerHTML = catogary;
+      cell4.innerHTML = sSiganl;
+      cell5.innerHTML = xSiganl;
+      cell6.innerHTML = gButton;
+      cell7.innerHTML = route;
+      cell8.innerHTML = uRoute;
+      cell9.innerHTML = YU;
+      cell10.innerHTML = Y;
+      cell11.innerHTML = YY;
+      cell12.innerHTML = G;
+
+
+
+
+
+
+
+
+
+      
+      // Reset form
+      document.getElementById('registration-form').reset();
+    }
+  </script>
+</body>
+</html>

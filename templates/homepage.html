@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Page</title>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome to the Home Page</h2>
+    <button onclick="goToProjects()">Projects</button>
+  </div>
+
+  <script>
+    function goToProjects() {
+      var entries = ["Route", "Signal", "Track"];
+      var queryString = "?entries=" + encodeURIComponent(JSON.stringify(entries));
+      window.location.href = "txt.html" + queryString;
+    }
+  </script>
+</body>
+</html>

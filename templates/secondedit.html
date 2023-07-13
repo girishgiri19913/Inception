@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signal</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Signal Table</h2>
+  <form id="registration-form">
+    <label for="point">Point:</label>
+    <input type="number" id="point" name="point" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <label for="a-pt">A-Point:</label> 
+    <select id="a-pt" name="a-pt" required>
+      <option value="">Select an option</option>
+      <option value="point">Point</option>
+      <option value="trap">Trap</option>
+    </select><br><br>
+    <label for="a-tc-ckt">A-Track-ckt:</label>
+    <input type="text" id="a-tc-ckt" name="a-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <label for="b-pt">B-Point:</label> 
+    <select id="b-pt" name="b-pt" required>
+      <option value="">Select an option</option>
+      <option value="point">Point</option>  
+      <option value="trap">Trap</option>
+    </select><br><br>
+    <label for="b-tc-ckt">B-Track-ckt:</label>
+    <input type="text" id="b-tc-ckt" name="b-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <label for="char">Char:</label>
+    <input type="number" id="char" name="char" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <button type="button" onclick="saveEntry()">Save</button>
+    <button type="button" onclick="cancelEdit()">Cancel</button>
+  </form>
+
+  <h2>Registered Entries</h2>
+  <table id="entries-table">
+    <tr>
+      <th>ID</th>
+      <th>Point</th>
+      <th>A Point</th>
+      <th>A Track Ckt</th>
+      <th>B Point</th>
+      <th>B Track Ckt</th>
+      <th>CHAR</th>
+      <th>Actions</th>
+    </tr>
+  </table>
+
+  <script>
+    var entries = [];
+    var selectedRow = null;
+
+    function restrictNegativeAndMoreThan999(event) {
+      var input = event.target;
+      var inputValue = event.target.value;
+
+      if (inputValue > 999 || inputValue < 0) {
+        input.value = inputValue.substring(0, inputValue.length - 1);
+      }
+    }
+
+    function restrictToAlphabets(event) {
+      var input = event.target;
+      var inputValue = input.value;
+      var alphabetsOnly = /^[a-zA-Z]+$/;
+
+      if (!inputValue.match(alphabetsOnly)) {
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+      }
+
+      // Restrict the input length to 5 characters
+      if (input.value.length > 5) {
+        input.value = input.value.slice(0, 5);
+      }
+    }
+
+    function saveEntry() {
+      var point = document.getElementById('point').value;
+      var aPoint = document.getElementById('a-pt').value;
+      var aTrackCkt = document.getElementById('a-tc-ckt').value;
+      var bPoint = document.getElementById('b-pt').value;
+      var bTrackCkt = document.getElementById('b-tc-ckt').value;
+      var Char = document.getElementById('char').value;
+
+      if (selectedRow) {
+        updateEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char);
+      } else {
+        addEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char);
+      }
+
+      clearForm();
+    }
+
+    function addEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char) {
+      var id = entries.length + 1;
+      var table = document.getElementById('entries-table');
+      var newRow = table.insertRow(-1);
+      newRow.setAttribute('data-id', id);
+      newRow.insertCell(0).textContent = id;
+      newRow.insertCell(1).textContent = point;
+      newRow.insertCell(2).textContent = aPoint;
+      newRow.insertCell(3).textContent = aTrackCkt;
+      newRow.insertCell(4).textContent = bPoint;
+      newRow.insertCell(5).textContent = bTrackCkt;
+      newRow.insertCell(6).textContent = Char;
+      newRow.insertCell(7).innerHTML = '<button onclick="editEntry(this)">Edit</button> <button onclick="deleteEntry(this)">Delete</button>';
+
+      entries.push({
+        id: id,
+        point: point,
+        aPoint: aPoint,
+        aTrackCkt: aTrackCkt,
+        bPoint: bPoint,
+        bTrackCkt: bTrackCkt,
+        Char: Char
+      });
+
+      updateIDs();
+      saveEntries();
+    }
+
+    function updateIDs() {
+      var table = document.getElementById('entries-table');
+      var rows = table.getElementsByTagName('tr');
+
+      for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        row.cells[0].textContent = i;
+        row.setAttribute('data-id', i);
+
+        var entry = entries.find(function (e) {
+          return e.id === parseInt(row.getAttribute('data-id'));
+        });
+
+        if (entry) {
+        entry.id = i;
+      }
+    }
+  }
+
+    
+            
+    function editEntry(button) {
+      var row = button.parentNode.parentNode;
+      var id = row.getAttribute('data-id');
+      var cells = row.cells;
+      var point = cells[1].textContent;
+      var aPoint = cells[2].textContent;
+      var aTrackCkt = cells[3].textContent;
+      var bPoint = cells[4].textContent;
+      var bTrackCkt = cells[5].textContent;
+      var Char = cells[6].textContent;
+
+      document.getElementById('point').value = point;
+      document.getElementById('a-pt').value = aPoint;
+      document.getElementById('a-tc-ckt').value = aTrackCkt;
+      document.getElementById('b-pt').value = bPoint;
+      document.getElementById('b-tc-ckt').value = bTrackCkt;
+      document.getElementById('char').value = Char;
+
+      selectedRow = row;
+    }
+
+    function updateEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char) {
+      var cells = selectedRow.cells;
+      cells[1].textContent = point;
+      cells[2].textContent = aPoint;
+      cells[3].textContent = aTrackCkt;
+      cells[4].textContent = bPoint;
+      cells[5].textContent = bTrackCkt;
+      cells[6].textContent = Char;
+
+      var id = selectedRow.getAttribute('data-id');
+      var entry = entries.find(function (e) {
+        return e.id === parseInt(id);
+      });
+
+      if (entry) {
+        entry.point = point;
+        entry.aPoint = aPoint;
+        entry.aTrackCkt = aTrackCkt;
+        entry.bPoint = bPoint;
+        entry.bTrackCkt = bTrackCkt;
+        entry.Char = Char;
+      }
+
+      selectedRow = null;
+      saveEntries();
+    }
+
+    function deleteEntry(button) {
+      var row = button.parentNode.parentNode;
+      var id = row.getAttribute('data-id');
+      var index = entries.findIndex(function (e) {
+        return e.id === parseInt(id);
+      });
+
+      if (index !== -1) {
+        entries.splice(index, 1);
+        row.remove();
+        updateIDs();
+        saveEntries();
+      }
+    }
+
+    
+
+    
+
+    function cancelEdit() {
+      clearForm();
+      selectedRow = null;
+    }
+
+    function clearForm() {
+      document.getElementById('point').value = '';
+      document.getElementById('a-pt').value = '';
+      document.getElementById('a-tc-ckt').value = '';
+      document.getElementById('b-pt').value = '';
+      document.getElementById('b-tc-ckt').value = '';
+      document.getElementById('char').value = '';
+    }
+
+    function saveEntries() {
+      localStorage.setItem('entries', JSON.stringify(entries));
+    }
+
+    function loadEntries() {
+      var storedEntries = localStorage.getItem('entries');
+
+      if (storedEntries) {
+        entries = JSON.parse(storedEntries);
+
+        var table = document.getElementById('entries-table');
+        for (var i = 0; i < entries.length; i++) {
+          var entry = entries[i];
+          var id = entry.id;
+          var point = entry.point;
+          var aPoint = entry.aPoint;
+          var aTrackCkt = entry.aTrackCkt;
+          var bPoint = entry.bPoint;
+          var bTrackCkt = entry.bTrackCkt;
+          var Char = entry.Char;
+
+          var newRow = table.insertRow(-1);
+          newRow.setAttribute('data-id', id);
+          newRow.insertCell(0).textContent = id;
+          newRow.insertCell(1).textContent = point;
+          newRow.insertCell(2).textContent = aPoint;
+          newRow.insertCell(3).textContent = aTrackCkt;
+          newRow.insertCell(4).textContent = bPoint;
+          newRow.insertCell(5).textContent = bTrackCkt;
+          newRow.insertCell(6).textContent = Char;
+          newRow.insertCell(7).innerHTML = '<button onclick="editEntry(this)">Edit</button> <button onclick="deleteEntry(this)">Delete</button>';
+        }
+      }
+    }
+
+    loadEntries();
+  </script>
+</body>
+</html>

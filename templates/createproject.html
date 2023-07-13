@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Projects</title>
+  <script>
+    var projectNames = [];
+
+    function openTextBox() {
+      document.getElementById("textbox").style.display = "block";
+    }
+
+    function saveText() {
+      var text = document.getElementById("projectText").value;
+      // Here, you can perform any additional logic to save the text
+      console.log("Text saved:", text);
+      projectNames.push(text);
+      createProjectButton(text);
+    }
+
+    function goBack() {
+      document.getElementById("textbox").style.display = "none";
+    }
+
+    function createProjectButton(projectName) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.textContent = projectName;
+      document.getElementById("projectButtons").appendChild(button);
+    }
+
+    function loadExistingProjects() {
+      for (var i = 0; i < projectNames.length; i++) {
+        createProjectButton(projectNames[i]);
+      }
+    }
+  </script>
+  <style>
+    #textbox {
+      display: none;
+    }
+  </style>
+</head>
+<body onload="loadExistingProjects()">
+  <h1>Projects</h1>
+
+  <button type="button" onclick="openTextBox()">Create New One</button>
+  <button type="button">Existing</button>
+
+  <div id="textbox">
+    <textarea id="projectText" rows="4" cols="50" placeholder="Enter your text here..."></textarea>
+    <br>
+    <button type="button" onclick="saveText()">Save</button>
+    <button type="button" onclick="goBack()">Back</button>
+  </div>
+
+  <div id="projectButtons">
+    <!-- Existing project buttons will be dynamically added here -->
+  </div>
+
+</body>
+</html>

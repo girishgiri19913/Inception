@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signal</title>
+  <style>
+   table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Signal Table</h2>
+  <form id="registration-form" onsubmit="addEntry(event)">
+    <label for="point">Point:</label>
+    <input type="number" id="point" name="point" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <label for="a-pt">A-Point:</label> 
+    <select id="a-pt" name="a-pt" required>
+      <option value="">Select an option</option>
+      <option value="point">Point</option>
+      <option value="trap">Trap</option>
+    </select><br><br>
+    <label for="a-tc-ckt">A-Track-ckt:</label>
+    <input type="text" id="a-tc-ckt" name="a-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <label for="b-pt">B-Point:</label> 
+    <select id="b-pt" name="b-pt" required>
+      <option value="">Select an option</option>
+      <option value="point">Point</option>
+      <option value="trap">Trap</option>
+    </select><br><br>
+    <label for="b-tc-ckt">B-Track-ckt:</label>
+    <input type="text" id="b-tc-ckt" name="b-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <label for="char">Char:</label>
+    <input type="number" id="char" name="char" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <h2>Registered Entries</h2>
+  <table id="entries-table">
+    <tr>
+      <th>ID</th>
+      <th>Point</th>
+      <th>A Point</th>
+      <th>A Track Ckt</th>
+      <th>B Point</th>
+      <th>B Track Ckt</th>
+      <th>CHAR</th>
+      <th>Actions</th>
+    </tr>
+  </table>
+
+  <script>
+    var entries = [];
+
+    function restrictNegativeAndMoreThan999(event) {
+      var input = event.target;
+      var inputValue = event.target.value;
+
+      if (inputValue > 999 || inputValue < 0) {
+        input.value = inputValue.substring(0, inputValue.length - 1);
+      }
+    }
+
+    function restrictToAlphabets(event) {
+      var input = event.target;
+      var inputValue = input.value;
+      var alphabetsOnly = /^[a-zA-Z]+$/;
+
+      if (!inputValue.match(alphabetsOnly)) {
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+      }
+
+      // Restrict the input length to 5 characters
+      if (input.value.length > 5) {
+        input.value = input.value.slice(0, 5);
+      }
+    }
+
+    function addEntry(event) {
+      event.preventDefault();
+
+      // Retrieve form values
+      var id = entries.length + 1;
+      var point = document.getElementById('point').value;
+      var aPoint = document.getElementById('a-pt').value;
+      var aTrackCkt = document.getElementById('a-tc-ckt').value;
+      var bPoint = document.getElementById('b-pt').value;
+      var bTrackCkt = document.getElementById('b-tc-ckt').value;
+      var Char = document.getElementById('char').value;
+
+      // Append values to the table
+      var table = document.getElementById('entries-table');
+      var newRow = table.insertRow(-1);
+      newRow.setAttribute('data-id', id);
+      newRow.insertCell(0).textContent = id;
+      newRow.insertCell(1).textContent = point;
+      newRow.insertCell(2).textContent = aPoint;
+      newRow.insertCell(3).textContent = aTrackCkt;
+      newRow.insertCell(4).textContent = bPoint;
+      newRow.insertCell(5).textContent = bTrackCkt;
+      newRow.insertCell(6).textContent = Char;
+      newRow.insertCell(7).innerHTML = '<button onclick="editEntry(this)">Edit</button>';
+
+      // Reset form
+      document.getElementById('registration-form').reset();
+
+      // Save the entry
+      entries.push({
+        id: id,
+        point: point,
+        aPoint: aPoint,
+        aTrackCkt: aTrackCkt,
+        bPoint: bPoint,
+        bTrackCkt: bTrackCkt,
+        Char: Char
+      });
+
+      saveEntries();
+    }
+
+    function editEntry(button) {
+      var row = button.parentNode.parentNode;
+      var id = row.getAttribute('data-id');
+
+      var cells = row.cells;
+      var pointValue = cells[1].textContent;
+      var aPointValue = cells[2].textContent;
+      var aTrackCktValue = cells[3].textContent;
+      var bPointValue = cells[4].textContent;
+      var bTrackCktValue = cells[5].textContent;
+      var charValue = cells[6].textContent;
+
+      cells[1].innerHTML = '<input type="number" value="' + pointValue + '" oninput="restrictNegativeAndMoreThan999(event)" required>';
+      cells[2].innerHTML = '<select required><option value="">Select an option</option><option value="point">Point</option><option value="trap">Trap</option></select>';
+      cells[2].getElementsByTagName('select')[0].value = aPointValue;
+      cells[3].innerHTML = '<input type="text" value="' + aTrackCktValue + '" oninput="restrictToAlphabets(event)" required>';
+      cells[4].innerHTML = '<select required><option value="">Select an option</option><option value="point">Point</option><option value="trap">Trap</option></select>';
+      cells[4].getElementsByTagName('select')[0].value = bPointValue;
+      cells[5].innerHTML = '<input type="text" value="' + bTrackCktValue + '" oninput="restrictToAlphabets(event)" required>';
+      cells[6].innerHTML = '<input type="number" value="' + charValue + '" oninput="restrictNegativeAndMoreThan999(event)" required>';
+      cells[7].innerHTML = '<button onclick="saveEditedEntry(this, ' + id + ')">Save</button>';
+    }
+
+    function saveEditedEntry(button, id) {
+      var row = button.parentNode.parentNode;
+      var cells = row.cells;
+
+      var point = cells[1].getElementsByTagName('input')[0].value;
+      var aPoint = cells[2].getElementsByTagName('select')[0].value;
+      var aTrackCkt = cells[3].getElementsByTagName('input')[0].value;
+      var bPoint = cells[4].getElementsByTagName('select')[0].value;
+      var bTrackCkt = cells[5].getElementsByTagName('input')[0].value;
+      var Char = cells[6].getElementsByTagName('input')[0].value;
+
+      // Update the table with the new values
+      cells[1].textContent = point;
+      cells[2].textContent = aPoint;
+      cells[3].textContent = aTrackCkt;
+      cells[4].textContent = bPoint;
+      cells[5].textContent = bTrackCkt;
+      cells[6].textContent = Char;
+      cells[7].innerHTML = '<button onclick="editEntry(this)">Edit</button>';
+
+      // Update the entry in the entries array
+      var entry = entries.find(function (e) {
+        return e.id === id;
+      });
+
+      if (entry) {
+        entry.point = point;
+        entry.aPoint = aPoint;
+        entry.aTrackCkt = aTrackCkt;
+        entry.bPoint = bPoint;
+        entry.bTrackCkt = bTrackCkt;
+        entry.Char = Char;
+      }
+
+      saveEntries();
+    }
+
+    function saveEntries() {
+      localStorage.setItem('entries', JSON.stringify(entries));
+    }
+
+    function loadEntries() {
+      var storedEntries = localStorage.getItem('entries');
+
+      if (storedEntries) {
+        entries = JSON.parse(storedEntries);
+
+        for (var i = 0; i < entries.length; i++) {
+          var entry = entries[i];
+
+          var table = document.getElementById('entries-table');
+          var newRow = table.insertRow(-1);
+          newRow.setAttribute('data-id', entry.id);
+          newRow.insertCell(0).textContent = entry.id;
+          newRow.insertCell(1).textContent = entry.point;
+          newRow.insertCell(2).textContent = entry.aPoint;
+          newRow.insertCell(3).textContent = entry.aTrackCkt;
+          newRow.insertCell(4).textContent = entry.bPoint;
+          newRow.insertCell(5).textContent = entry.bTrackCkt;
+          newRow.insertCell(6).textContent = entry.Char;
+          newRow.insertCell(7).innerHTML = '<button onclick="editEntry(this)">Edit</button>';
+        }
+      }
+    }
+
+    loadEntries();
+  </script>
+</body>
+</html>

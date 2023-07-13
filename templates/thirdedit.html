@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Train</title>
+  <style>
+   table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Train Table</h2>
+  <form id="registration-form" onsubmit="addEntry(event)">
+    <label for="tc">TC:</label> 
+    <select id="tc" name="tc" required>
+      <option value="">Select an option</option>
+      <option value="TC">TC</option>
+      <option value="AXC">AXC</option>
+    </select><br><br>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" oninput="restrictToRoute(event)" required><br><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <h2>Registered Entries</h2>
+  <table id="entries-table">
+    <tr>
+      <th>ID</th>
+      <th>TC</th>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </table>
+
+  <script>
+    var entries = [];
+
+    // Load entries from localStorage on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      var storedEntries = localStorage.getItem('trainEntries');
+      if (storedEntries) {
+        entries = JSON.parse(storedEntries);
+        updateTable();
+      }
+    });
+
+    function restrictToRoute(event) {
+      var input = event.target;
+      var inputValue = input.value;
+      var routePattern = /^[a-zA-Z0-9\s-]+$/;
+
+      if (!inputValue.match(routePattern)) {
+        input.value = input.value.replace(/[^a-zA-Z0-9\s-]/g, '');
+      }
+
+      // Restrict the input length to 15 characters
+      if (input.value.length > 15) {
+        input.value = input.value.slice(0, 15);
+      }
+    }
+
+    function addEntry(event) {
+      event.preventDefault();
+
+      // Retrieve form values
+      var tc = document.getElementById('tc').value;
+      var name = document.getElementById('name').value;
+
+      // Validate form values
+      if (tc === '' || name === '') {
+        return;
+      }
+
+      // Create a new entry object
+      var entry = {
+        id: entries.length + 1,
+        tc: tc,
+        name: name
+      };
+
+      // Add the entry to the entries array
+      entries.push(entry);
+
+      // Update the table with the new entry
+      updateTable();
+
+      // Save entries to localStorage
+      localStorage.setItem('trainEntries', JSON.stringify(entries));
+
+      // Reset form
+      document.getElementById('registration-form').reset();
+    }
+
+    /*function deleteEntry(index) {
+  // Remove the entry from the entries array
+  entries.splice(index, 1);
+
+  // Update the table
+  updateTable();
+
+  // Save entries to localStorage
+  localStorage.setItem('trainEntries', JSON.stringify(entries));
+    }*/
+
+    function deleteEntry(index) {
+  // Remove the entry from the entries array
+  entries.splice(index, 1);
+
+  // Update the IDs of the remaining entries
+  for (var i = index; i < entries.length; i++) {
+    entries[i].id = i + 1;
+  }
+
+  // Update the table
+  updateTable();
+
+  // Save entries to localStorage
+  localStorage.setItem('trainEntries', JSON.stringify(entries));
+  }
+
+    function updateTable() {
+      var table = document.getElementById('entries-table');
+
+      // Clear existing rows
+      while (table.rows.length > 1) {
+        table.deleteRow(1);
+      }
+
+      // Add rows for each entry
+      for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i];
+
+        // Create a new row
+        var row = table.insertRow(-1);
+
+        // Add cells to the row
+        var idCell = row.insertCell(0);
+        var tcCell = row.insertCell(1);
+        var nameCell = row.insertCell(2);
+        var actionsCell = row.insertCell(3);
+
+        // Set cell values
+        idCell.textContent = entry.id;
+        tcCell.textContent = entry.tc;
+        nameCell.textContent = entry.name;
+
+        // Add edit button to the actions cell
+        var editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', createEditHandler(i));
+        actionsCell.appendChild(editButton);
+
+        // Add delete button to the actions cell
+        var deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', createDeleteHandler(i));
+        actionsCell.appendChild(deleteButton);
+      }
+    }
+
+    
+
+
+    function createEditHandler(index) {
+      return function() {
+        editEntry(index);
+      };
+    }
+
+    function createDeleteHandler(index) {
+      return function() {
+       deleteEntry(index);
+      };
+    }
+
+    /*function editEntry(index) {
+      var entry = entries[index];
+
+      // Get the table row for the entry
+      var row = document.getElementById('entries-table').rows[index + 1];
+
+      // Create input elements for editing
+      var tcInput = document.createElement('select');
+      tcInput.id = 'edit-tc';
+      tcInput.name = 'edit-tc';
+      tcInput.required = true;
+
+      var option1 = document.createElement('option');
+      option1.value = '';
+      option1.textContent = 'Select an option';
+      tcInput.appendChild(option1);
+
+      var option2 = document.createElement('option');
+      option2.value = 'TC';
+      option2.textContent = 'TC';
+      tcInput.appendChild(option2);
+
+      var option3 = document.createElement('option');
+      option3.value = 'AXC';
+      option3.textContent = 'AXC';
+      tcInput.appendChild(option3);
+
+      tcInput.value = entry.tc;
+
+      var nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = entry.name;
+      nameInput.addEventListener('input', function() {
+        restrictToRoute(event);
+      });
+
+      // Replace cell contents with input elements
+      row.cells[1].textContent = '';
+      row.cells[1].appendChild(tcInput);
+
+      row.cells[2].textContent = '';
+      row.cells[2].appendChild(nameInput);
+
+      // Remove the edit button from the actions cell
+      row.cells[3].textContent = '';
+
+      // Create save button for the row
+      var saveButton = document.createElement('button');
+      saveButton.textContent = 'Save';
+      saveButton.addEventListener('click', createSaveHandler(index));
+      row.cells[3].appendChild(saveButton);
+    }*/
+
+    function editEntry(index) {
+  var entry = entries[index];
+
+  // Get the table row for the entry
+  var row = document.getElementById('entries-table').rows[index + 1];
+
+  // Create input elements for editing
+  var tcInput = document.createElement('select');
+  tcInput.id = 'edit-tc';
+  tcInput.name = 'edit-tc';
+  tcInput.required = true;
+
+  var option1 = document.createElement('option');
+  option1.value = '';
+  option1.textContent = 'Select an option';
+  tcInput.appendChild(option1);
+
+  var option2 = document.createElement('option');
+  option2.value = 'TC';
+  option2.textContent = 'TC';
+  tcInput.appendChild(option2);
+
+  var option3 = document.createElement('option');
+  option3.value = 'AXC';
+  option3.textContent = 'AXC';
+  tcInput.appendChild(option3);
+
+  tcInput.value = entry.tc;
+
+  var nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.value = entry.name;
+  nameInput.addEventListener('input', function() {
+    restrictToRoute(event);
+  });
+
+  // Replace cell contents with input elements
+  row.cells[1].textContent = '';
+  row.cells[1].appendChild(tcInput);
+
+  row.cells[2].textContent = '';
+  row.cells[2].appendChild(nameInput);
+
+  // Remove the edit button from the actions cell
+  row.cells[3].textContent = '';
+
+  // Create save button for the row
+  var saveButton = document.createElement('button');
+  saveButton.textContent = 'Save';
+  saveButton.addEventListener('click', createSaveHandler(index));
+  row.cells[3].appendChild(saveButton);
+
+  // Set the form values for editing
+  document.getElementById('tc').value = entry.tc;
+  document.getElementById('name').value = entry.name;
+
+}
+
+    function createSaveHandler(index) {
+      return function() {
+        saveEntry(index);
+      };
+    }
+
+    function saveEntry(index) {
+      var entry = entries[index];
+
+      // Get the table row for the entry
+      var row = document.getElementById('entries-table').rows[index + 1];
+
+      // Retrieve updated values from the input elements
+      var tc = row.cells[1].querySelector('select').value;
+      var name = row.cells[2].querySelector('input').value;
+
+      // Validate the updated values
+      if (tc !== '' && name !== '') {
+        // Update the entry with the new values
+        entry.tc = tc;
+        entry.name = name;
+
+        // Update the table
+        row.cells[1].textContent = entry.tc;
+        row.cells[2].textContent = entry.name;
+
+        // Create edit button for the actions cell
+        var editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', createEditHandler(index));
+        row.cells[3].textContent = '';
+        row.cells[3].appendChild(editButton);
+
+        // Save entries to localStorage
+        localStorage.setItem('trainEntries', JSON.stringify(entries));
+      }
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,63 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Existing Projects</title>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .back-button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Select an Existing Project</h2>
+    <button onclick="goToTable('route')">Route</button>
+    <button onclick="goToTable('signal')">Signal</button>
+    <button onclick="goToTable('train')">Train</button><br></br>
+    <button class="back-button" onclick="goBack()">Back</button>
+  </div>
+
+  <script>
+    function goToTable(option) {
+      if (option === 'route') {
+        window.location.href = "txt.html";
+      } else if (option === 'signal') {
+        window.location.href = "txt.html";
+      } else if (option === 'train') {
+        window.location.href = "txt.html";
+      }
+    }
+    
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create New Project</title>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Create New Project</h2>
+    <input type="text" id="projectName" placeholder="Enter new project name">
+    <br>
+    <button onclick="saveProject()">Save</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <script>
+    function saveProject() {
+      var projectName = document.getElementById("projectName").value;
+      // Here, you can perform any additional logic to save the project name
+      console.log("Project saved:", projectName);
+      addProjectToStorage(projectName);
+      goBack();
+    }
+
+    function goBack() {
+      window.location.href = "index.html";
+    }
+
+    function addProjectToStorage(projectName) {
+      var projects = JSON.parse(localStorage.getItem("projects")) || [];
+      projects.push(projectName);
+      localStorage.setItem("projects", JSON.stringify(projects));
+    }
+  </script>
+</body>
+</html>

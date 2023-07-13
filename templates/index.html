@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Page</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/keycloak-js@12.0.4"></script>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>PROJECTS</h2>
+    <button onclick="goToProjects('new')">Create te One</button>
+    <button onclick="goToProjects('existing')">Existing</button>
+  </div>
+
+  <script>
+
+     // Initialize Keycloak
+     var keycloak = new Keycloak({
+      url: 'http://localhost:8090/auth',
+      realm: 'master',
+      clientId: 'timesheet'
+    });
+
+    // Authenticate the user
+    keycloak.init({ onLoad: 'login-required' })
+      .then(function(authenticated) {
+        if (authenticated) {
+          // Obtain tokens
+          var accessToken = keycloak.token;
+          var idToken = keycloak.idToken;
+          var refreshToken = keycloak.refreshToken;
+
+          // Use tokens for subsequent requests or to control access
+          console.log('Access Token:', accessToken);
+          console.log('ID Token:', idToken);
+          console.log('Refresh Token:', refreshToken);
+        }
+      })
+      .catch(function(error) {
+        console.error('Keycloak initialization error:', error);
+      });
+    function goToProjects(option) {
+      if (option === 'new') {
+        window.location.href = "create.html";
+      } else if (option === 'existing') {
+        window.location.href = "existingedit.html";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Projects</title>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .input-container {
+      margin-bottom: 10px;
+    }
+
+    .input-container label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-container input[type="text"] {
+      padding: 5px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2> Projects</h2>
+    <div class="input-container" id="inputContainer">
+      <label for="newProjectName" id="newProjectLabel" class="hidden">Enter new project name:</label>
+      <input type="text" id="newProjectName" class="hidden" />
+    </div>
+    <button onclick="showInput()">Create New Project</button>
+    <button onclick="goBack()" id="backButton" class="hidden">Back</button>
+    <button onclick="saveProject()" id="saveButton" class="hidden">Save</button>
+  </div>
+
+  <script>
+    function showInput() {
+      var inputContainer = document.getElementById("inputContainer");
+      var newProjectLabel = document.getElementById("newProjectLabel");
+      var newProjectName = document.getElementById("newProjectName");
+      var backButton = document.getElementById("backButton");
+      var saveButton = document.getElementById("saveButton");
+
+      inputContainer.classList.remove("hidden");
+      newProjectLabel.classList.remove("hidden");
+      newProjectName.classList.remove("hidden");
+      backButton.classList.remove("hidden");
+      saveButton.classList.remove("hidden");
+    }
+
+    function goBack() {
+      var inputContainer = document.getElementById("inputContainer");
+      var newProjectLabel = document.getElementById("newProjectLabel");
+      var newProjectName = document.getElementById("newProjectName");
+      var backButton = document.getElementById("backButton");
+      var saveButton = document.getElementById("saveButton");
+
+      inputContainer.classList.add("hidden");
+      newProjectLabel.classList.add("hidden");
+      newProjectName.classList.add("hidden");
+      backButton.classList.add("hidden");
+      saveButton.classList.add("hidden");
+    }
+
+    function saveProject() {
+      var projectName = document.getElementById("newProjectName").value;
+      if (projectName !== '') {
+        // Save the project
+        alert("Project saved: " + projectName);
+        goBack();
+      } else {
+        alert("Please enter a project name.");
+      }
+    }
+  </script>
+</body>
+</html>

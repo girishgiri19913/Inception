@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Existing Projects</title>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      margin-bottom: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .project-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Existing Projects</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Project Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="projectTableBody">
+        <!-- Saved project names will be dynamically added here -->
+      </tbody>
+    </table>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <script>
+    function createProjectRow(projectName) {
+      var row = document.createElement("tr");
+
+      var projectNameCell = document.createElement("td");
+      projectNameCell.textContent = projectName;
+
+      var actionCell = document.createElement("td");
+      var renameButton = document.createElement("button");
+      renameButton.textContent = "Rename";
+      renameButton.addEventListener("click", function() {
+        renameProject(projectName);
+      });
+      actionCell.appendChild(renameButton);
+
+      var deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.addEventListener("click", function() {
+        deleteProject(projectName);
+      });
+      actionCell.appendChild(deleteButton);
+
+      row.appendChild(projectNameCell);
+      row.appendChild(actionCell);
+
+      document.getElementById("projectTableBody").appendChild(row);
+    }
+
+    function renameProject(projectName) {
+      var newProjectName = prompt("Enter the new project name:", projectName);
+      if (newProjectName !== null && newProjectName.trim() !== "") {
+        updateProjectName(projectName, newProjectName);
+      }
+    }
+
+    function updateProjectName(oldName, newName) {
+      var projects = JSON.parse(localStorage.getItem("projects")) || [];
+      var index = projects.indexOf(oldName);
+      if (index !== -1) {
+        projects[index] = newName;
+        localStorage.setItem("projects", JSON.stringify(projects));
+        refreshProjectTable();
+      }
+    }
+
+    function deleteProject(projectName) {
+      if (confirm("Are you sure you want to delete this project?")) {
+        var projects = JSON.parse(localStorage.getItem("projects")) || [];
+        var index = projects.indexOf(projectName);
+        if (index !== -1) {
+          projects.splice(index, 1);
+          localStorage.setItem("projects", JSON.stringify(projects));
+          refreshProjectTable();
+        }
+      }
+    }
+
+    function refreshProjectTable() {
+      var projectTableBody = document.getElementById("projectTableBody");
+      projectTableBody.innerHTML = "";
+      var projects = JSON.parse(localStorage.getItem("projects")) || [];
+      for (var i = 0; i < projects.length; i++) {
+        createProjectRow(projects[i]);
+      }
+    }
+
+    function goBack() {
+      window.location.href = "index.html";
+    }
+
+    function loadProjects() {
+      var projects = JSON.parse(localStorage.getItem("projects")) || [];
+      for (var i = 0; i < projects.length; i++) {
+        createProjectRow(projects[i]);
+      }
+    }
+
+    // Call the function to load projects when the page loads
+    loadProjects();
+  </script>
+</body>
+</html>

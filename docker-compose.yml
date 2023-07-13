@@ -1,0 +1,28 @@
+version: '3'
+services:
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=passworddocker
+    ports:
+      - 8090:8080
+    restart: always
+    volumes:
+      - ./keycloak/data:/opt/jboss/keycloak/standalone/data
+
+  app:
+    build:
+      context: .
+    ports:
+      - 5438:80 
+
+    networks:
+      - extract_regular_db_default
+
+  
+networks:
+  extract_regular_db_default:
+    external: true
+
+  
