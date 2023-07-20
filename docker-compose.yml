@@ -17,6 +17,9 @@ services:
     ports:
       - 5438:80 
 
+    volumes:
+      - ./:/app
+
     networks:
       - extract_regular_db_default
 

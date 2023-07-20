@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Route Management</title>
+  <style>
+    /* Your CSS styles */
+  </style>
+</head>
+<body>
+  <h1>Route Management</h1>
+
+  <!-- Get Routes -->
+  <h2>Get Routes</h2>
+  <button onclick="getRoutes()">Get Routes</button>
+  <div id="routes"></div>
+
+  <!-- Create Route -->
+  <h2>Create Route</h2>
+  <form id="createRouteForm">
+    <label for="category">Category:</label>
+    <input type="text" id="category" name="category" required><br>
+    <!-- Add other fields here for the Route model -->
+    <button type="submit">Create Route</button>
+  </form>
+
+  <!-- Update Route -->
+  <h2>Update Route</h2>
+  <form id="updateRouteForm">
+    <label for="updateRouteId">Route ID:</label>
+    <input type="text" id="updateRouteId" name="updateRouteId" required><br>
+    <label for="updateCategory">New Category:</label>
+    <input type="text" id="updateCategory" name="updateCategory" required><br>
+    <!-- Add other fields here for the Route model -->
+    <button type="submit">Update Route</button>
+  </form>
+
+  <!-- Delete Route -->
+  <h2>Delete Route</h2>
+  <form id="deleteRouteForm">
+    <label for="deleteRouteId">Route ID:</label>
+    <input type="text" id="deleteRouteId" name="deleteRouteId" required><br>
+    <button type="submit">Delete Route</button>
+  </form>
+
+  <script>
+    // Get Routes
+    function getRoutes() {
+      fetch('/routes')
+        .then(response => response.json())
+        .then(data => {
+          const routesDiv = document.getElementById('routes');
+          routesDiv.innerHTML = '';
+          data.forEach(route => {
+            routesDiv.innerHTML += `<p>Route ID: ${route.id}, Category: ${route.category}</p>`;
+            // Add other fields here to display the Route model properties
+          });
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    }
+
+    // Create Route
+    document.getElementById('createRouteForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const routeData = Object.fromEntries(formData.entries());
+
+      fetch('/create_route', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(routeData)
+      })
+        .then(response => {
+          if (response.ok) {
+            form.reset();
+            getRoutes();
+          } else {
+            throw new Error('Error creating route');
+          }
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    });
+
+    // Update Route
+    document.getElementById('updateRouteForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const routeData = Object.fromEntries(formData.entries());
+      const routeId = routeData.updateRouteId;
+      delete routeData.updateRouteId;
+
+      fetch(`/update_route/${routeId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(routeData)
+      })
+        .then(response => {
+          if (response.ok) {
+            form.reset();
+            getRoutes();
+          } else {
+            throw new Error('Error updating route');
+          }
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    });
+
+    // Delete Route
+    document.getElementById('deleteRouteForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.target;
+      const routeId = form.deleteRouteId.value;
+
+      fetch(`/delete_route/${routeId}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (response.ok) {
+            form.reset();
+            getRoutes();
+          } else {
+            throw new Error('Error deleting route');
+          }
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    });
+  </script>
+</body>
+</html>

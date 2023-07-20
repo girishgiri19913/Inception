@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 import models
 from database import engine
-from routers import create_project, todos
+from routers import create_signal,create_project,create_route,create_track
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
 app.include_router(create_project.router)
-# app.include_router(todos.router)
+app.include_router(create_signal.router)
+app.include_router(create_route.router)
+app.include_router(create_track.router)
+
