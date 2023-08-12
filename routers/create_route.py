@@ -15,9 +15,10 @@ def get_db():
         db.close()
 
 class Route(BaseModel):
+    prefix : str
     category:str
-    s_signal:int
-    x_signal:int
+    s_signal:str
+    x_signal:str
     g_button:str
     route:str
     u_route:str
@@ -47,6 +48,7 @@ async def get_route(route_id: int, db: Session = Depends(get_db)):
 async def create_route(route: Route, db: Session = Depends(get_db)):
     print(route.category)
     project_model = models.Route()
+    project_model.prefix =route.prefix
     project_model.category = route.category  # Assuming models.Signal is the correct database model
     project_model.s_signal = route.s_signal
     project_model.x_signal = route.x_signal
@@ -75,6 +77,7 @@ async def update_route(route_id: int, route: Route, db: Session = Depends(get_db
     if existing_route is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Route not found")
 
+    existing_route.prefix = route.prefix
     existing_route.category = route.category
     existing_route.s_signal = route.s_signal
     existing_route.x_signal = route.x_signal

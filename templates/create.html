@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Create New Project</title>
   <style>
@@ -35,6 +36,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h2>Create New Project</h2>
@@ -45,23 +47,56 @@
   </div>
 
   <script>
+
+    function getCookie(name) {
+      const cookieString = document.cookie;
+      const cookies = cookieString.split(";");
+
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          return decodeURIComponent(cookie.substring(name.length + 1));
+        }
+      }
+
+      return null; // Return null if the cookie with the specified name is not found
+    }
     function saveProject() {
       var projectName = document.getElementById("projectName").value;
       // Here, you can perform any additional logic to save the project name
       console.log("Project saved:", projectName);
-      addProjectToStorage(projectName);
-      goBack();
+      const data = {
+        "project_name": projectName
+      }
+      postData(data);
+      // goBack();
     }
 
     function goBack() {
       window.location.href = "index.html";
     }
 
-    function addProjectToStorage(projectName) {
-      var projects = JSON.parse(localStorage.getItem("projects")) || [];
-      projects.push(projectName);
-      localStorage.setItem("projects", JSON.stringify(projects));
+    function postData(data) {
+      const token = getCookie("token"); // Replace with your actual token
+
+      fetch("http://localhost:5438/create_project", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the API response here
+          console.log("Response data:", data);
+        })
+        .catch(error => {
+          console.error("Error posting data:", error);
+        });
     }
   </script>
 </body>
+
 </html>

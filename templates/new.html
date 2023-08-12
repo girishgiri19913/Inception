@@ -33,46 +33,7 @@
         width: 160px;
         display: inline-block;
     }
-
-     /* The Modal (background) */
-  .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0); /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-  }
-
-  /* Modal Content/Box */
-  .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-  }
-
-  /* Close Button */
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-  }
-
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
-</style>
-
+  </style>
 </head>
 <body>
   <h2>Track Table</h2>
@@ -84,8 +45,7 @@
       <option value="AXC">AXC</option>
     </select><br><br>
     <label for="name">Name:</label>
-    <input type="text" id="name" name="name" oninput="restrictToRoute(event)" required>
-    <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
+    <input type="text" id="name" name="name" oninput="restrictToRoute(event)" required><br><br>
 
     <label for="projectID">Project ID:</label>
     <input type="number" id="projectID" name="projectID" readonly required><br><br> <!-- Add readonly attribute -->
@@ -95,50 +55,32 @@
     <h2>Registered Entries</h2>
   </form>
 
-  <!-- Modal -->
-<div id="myModal" class="modal">
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h3>Edit Entry</h3>
-    <label for="modal-tc">TC:</label>
-    <select id="modal-tc" name="modal-tc" required>
-      <option value="">Select an option</option>
-      <option value="TC">TC</option>
-      <option value="AXC">AXC</option>required>
-
-    </select><br><br>
-
-    <label for="modal-name">Name:</label>
-    <input type="text" id="modal-name" name="modal-name" oninput="restrictToRoute(event)" required>
-    <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
-
-    <input type="text" id="modal-track-id" name="modal-track-id" readonly required style="display: none;"><br><br>
-
-    <button type="button" onclick="saveUpdate()">Save</button>
-    <button type="button" onclick="closeModal()">Cancel</button>
-  </div>
-</div>
-
   <script>
     var entries = [];
     var selectedRow = null;
-    var modal = document.getElementById("myModal");
-
 
     // Function to retrieve the selected project ID from localStorage
     function getSelectedProjectID() {
       return localStorage.getItem("selectedProject");
     }
 
-    
+    function restrictNegativeAndMoreThan999(event) {
+      console.log(event);
+      var input = event.target;
+      var inputValue = event.target.value;
+      
+      if (inputValue > 999 || inputValue < 0) {
+        input.value = inputValue.substring(0, inputValue.length-1);
+      }
+    }
+
     function restrictToRoute(event) {
       var input = event.target;
       var inputValue = input.value;
-      var routePattern = /^[a-zA-Z0-9\s_]+$/;
+      var routePattern = /^[a-zA-Z0-9\s-]+$/;
 
       if (!inputValue.match(routePattern)) {
-        input.value = input.value.replace(/[^a-zA-Z0-9\s_]/g, '');
+        input.value = input.value.replace(/[^a-zA-Z0-9\s-]/g, '');
       }
 
       // Restrict the input length to 15 characters
@@ -197,31 +139,6 @@
   seeAllEntries();
 };
 
-
-function closeModal() {
-    modal.style.display = "none";
-  }
-
-  // Save the updated values when the "Save" button is clicked
-  function saveUpdate() {
-    const modalTc = document.getElementById("modal-tc").value;
-    const modalName = document.getElementById("modal-name").value;
-    const trackId = document.getElementById("modal-track-id").value;
-    // Hide the modal
-    modal.style.display = "none";
-
-    // if (!selectedRow) {
-    //   console.error("No row selected for update.");
-    //   return;
-    // }
-
-    // // Get the entry ID of the row to update
-    // const entryIdToUpdate = selectedRow.querySelector('td:first-child').textContent;
-
-    // Call the updateEntry function to save the changes
-    updateEntry(trackId, modalTc, modalName);
-  }
-
 // In the seeAllEntries function, change the error console.log to alert
 function seeAllEntries() {
   const selectedProjectID = getSelectedProjectID();
@@ -247,38 +164,6 @@ function seeAllEntries() {
           console.error("Error fetching entries:", error);
         });
     }
-
-    function updateEntry(trackId, updatedTc, updatedName) {
-    // ... (your existing updateEntry function code) ...
-
-    const updatedData = {
-      tc: updatedTc,
-      name: updatedName,
-      project_id: getSelectedProjectID(),
-      // Add any other properties you need to update
-    };
-
-    
-    // Send HTTP PUT request to update the specific entry based on entryId
-    fetch(`http://localhost:5438/update_track/${trackId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update entry.");
-        }
-        console.log("Entry updated successfully!");
-        // After successful update, you may want to refresh the entries table to show the updated data
-        seeAllEntries();
-      })
-      .catch((error) => {
-        console.error("Error updating entry:", error);
-      });
-  }
 
     function displayEntries(entriesData) {
   const selectedProjectID = getSelectedProjectID();
@@ -328,38 +213,7 @@ function seeAllEntries() {
     cell4.textContent = entry.project_id;
 
 
-    const updateButton = document.createElement('button');
-    updateButton.textContent = 'Update';
-    updateButton.addEventListener('click', () => {
-      // ... (your existing updateButton click event listener code) ...
-
-      // ... (rest of your existing updateButton click event listener code) ...
-
-      // Show the modal when the "Update" button is clicked
-      showModal(entry.id, entry.tc, entry.name);
-    });
-
-    const modal = document.getElementById("myModal");
-
-  // Get the <span> element that closes the modal
-  const span = document.getElementsByClassName("close")[0];
-
-  // Show the modal with the provided TC and Name values
-  function showModal(entryId, tc, name) {
-    const modalTc = document.getElementById("modal-tc");
-    const modalName = document.getElementById("modal-name");
-    const trackId = document.getElementById("modal-track-id");
-    modalTc.value = tc;
-    modalName.value = name;
-    trackId.value = entryId
-    // Show the modal
-    modal.style.display = "block";
-  }
-
-  // Hide the modal when the "Cancel" button or close button is clicked
-  
-
-  
+   
     // Create "Delete" button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
@@ -392,7 +246,7 @@ function deleteEntry(entryId) {
 }
 
 
-    cellActions.appendChild(updateButton);
+    
     cellActions.appendChild(deleteButton);
     row.appendChild(cell1);
     row.appendChild(cell2);
@@ -426,5 +280,5 @@ function deleteEntry(entryId) {
       document.getElementById('projectID').value = ''; // Clear projectID field
     }
   </script>
-</body>                             
-</html>      
+</body>
+</html>

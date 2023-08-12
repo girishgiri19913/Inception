@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signal</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    } 
+  </style>
+</head>
+<body>
+  <h2>Signal Table</h2>
+  <form id="registration-form">
+    <label for="point">Point:</label>
+    <input type="number" id="point" name="point" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <label for="a-pt">A-Point:</label> 
+    <select id="a-pt" name="a-pt" required>
+      <option value="">Select an option</option>
+      <option value="point">Point</option>
+      <option value="trap">Trap</option>
+    </select><br><br>
+    <label for="a-tc-ckt">A-Track-ckt:</label>
+    <input type="text" id="a-tc-ckt" name="a-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <label for="b-pt">B-Point:</label> 
+    <select id="b-pt" name="b-pt" required>
+      <option value="">Select an option</option>
+      <option value="point">Point</option>  
+      <option value="trap">Trap</option>
+    </select><br><br>
+    <label for="b-tc-ckt">B-Track-ckt:</label>
+    <input type="text" id="b-tc-ckt" name="b-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <label for="char">Char:</label>
+    <input type="number" id="char" name="char" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <label for="projectID">Project ID:</label>
+    <input type="number" id="projectID" name="projectID" readonly required><br><br>
+    <button type="button" onclick="saveEntry()">Save</button>
+    <button type="button" onclick="cancelEdit()">Cancel</button>
+    <h3>Registered entries</h3>
+  </form>
+
+  <script>
+    var entries = [];
+    var selectedRow = null;
+
+    // Function to fetch the selected project name from localStorage
+    function getSelectedProjectID() {
+      return localStorage.getItem("selectedProject");
+    }
+
+    function restrictNegativeAndMoreThan999(event) {
+      var input = event.target;
+      var inputValue = event.target.value;
+
+      if (inputValue > 999 || inputValue < 0) {
+        input.value = inputValue.substring(0, inputValue.length - 1);
+      }
+    }
+
+    function restrictToAlphabets(event) {
+      var input = event.target;
+      var inputValue = input.value;
+      var alphabetsOnly = /^[a-zA-Z]+$/;
+
+      if (!inputValue.match(alphabetsOnly)) {
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+      }
+
+      // Restrict the input length to 5 characters
+      if (input.value.length > 5) {
+        input.value = input.value.slice(0, 5);
+      }
+    }
+
+    
+
+    function autofillProjectID() {
+      const selectedProjectID = getSelectedProjectID();
+      if (selectedProjectID) {
+        document.getElementById('projectID').value = selectedProjectID;
+      } else {
+        console.error("No project selected.");
+      }
+    }
+
+    // Call the autofill function when the page loads
+    window.onload = autofillProjectID;
+
+    // Function to save the entry
+    function saveEntry() {
+      const point = document.getElementById('point').value;
+      const aPoint = document.getElementById('a-pt').value;
+      const aTrackCkt = document.getElementById('a-tc-ckt').value;
+      const bPoint = document.getElementById('b-pt').value;
+      const bTrackCkt = document.getElementById('b-tc-ckt').value;
+      const Char = document.getElementById('char').value;
+      const projectID = document.getElementById('projectID').value; // Get manually entered Project ID
+
+      // Create the entry object with the data
+      const entry = {
+        point: parseInt(point),
+        a_point: aPoint,
+        a_Track_point: aTrackCkt,
+        b_point: bPoint,
+        b_Track_point: bTrackCkt,
+        char: Char,
+        project_id: parseInt(projectID)
+      };
+
+      // Send HTTP POST request to create the signal
+      fetch("http://localhost:5438/create_signal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(entry)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to create signal.");
+        }
+        console.log("Signal created successfully!");
+        // Clear the form fields after successful creation
+        clearForm();
+      })
+      .catch(error => {
+        console.error("Error creating signal:", error);
+      });
+    }
+
+    function seeAllEntries() {
+      const selectedProjectID = getSelectedProjectID();
+
+      if (!selectedProjectID) {
+        console.error("No project selected.");
+        return;
+      }
+
+      
+
+      // Send HTTP GET request to fetch entries with the specific project ID
+      fetch(`http://localhost:5438/signals?project_id=${selectedProjectID}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch entries.");
+          }
+          return response.json();
+        })
+        .then(entriesData => {
+          // Process the fetched entriesData and display them on the webpage
+          displayEntries(entriesData);
+        })
+        .catch(error => {
+          console.error("Error fetching entries:", error);
+        });
+    }
+
+    function displayEntries(entriesData) {
+  const selectedProjectID = getSelectedProjectID();
+
+  if (!selectedProjectID) {
+    console.error("No project selected.");
+    return;
+  }
+
+  const filteredEntries = entriesData.filter(entry => entry.project_id === parseInt(selectedProjectID));
+
+  const table = document.createElement('table');
+  const tableHead = document.createElement('thead');
+  const tableBody = document.createElement('tbody');
+  
+  // Create table header row
+  const headerRow = document.createElement('tr');
+  const headerCell1 = document.createElement('th');
+  const headerCell2 = document.createElement('th');
+  const headerCell3 = document.createElement('th');
+  const headerCell4 = document.createElement('th');
+  const headerCell5 = document.createElement('th');
+  const headerCell6 = document.createElement('th');
+  const headerCell7= document.createElement('th');
+  const headerCell8 = document.createElement('th');
+  headerCell1.textContent = 'Point';
+  headerCell2.textContent = 'A Point';
+  headerCell3.textContent = 'A Track Point';
+  headerCell4.textContent = 'B point';
+  headerCell5.textContent = 'B Track Point';
+  headerCell6.textContent = ' Char';
+  headerCell7.textContent = 'Project ID';
+  headerCell8.textContent = 'Actions';
+  headerRow.appendChild(headerCell1);
+  headerRow.appendChild(headerCell2);
+  headerRow.appendChild(headerCell3);
+  headerRow.appendChild(headerCell4);
+  headerRow.appendChild(headerCell5);
+  headerRow.appendChild(headerCell6);
+  headerRow.appendChild(headerCell7);
+  headerRow.appendChild(headerCell8);
+  tableHead.appendChild(headerRow);
+
+  // Create table rows for each entry
+  filteredEntries.forEach(entry => {
+    const row = document.createElement('tr');
+    const cell1 = document.createElement('td');
+    const cell2 = document.createElement('td');
+    const cell3 = document.createElement('td');
+    const cell4 = document.createElement('td');
+    const cell5 = document.createElement('td');
+    const cell6 = document.createElement('td');
+    const cell7 = document.createElement('td');
+    const cellActions = document.createElement('td');
+    cell1.textContent = entry.point;
+    cell2.textContent = entry.a_point;
+    cell3.textContent = entry.a_Track_point;
+    cell4.textContent = entry.b_point;
+    cell5.textContent = entry.b_Track_point;
+    cell6.textContent = entry.char;
+    cell7.textContent = entry.project_id;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => {
+      // Call the function to delete the specific row
+      deleteEntry(entry.id); // Assuming there's an "id" property in the entry object representing the unique identifier in the database
+    });
+
+
+    
+function deleteEntry(entryId) {
+  // Send HTTP DELETE request to delete the specific entry based on entryId
+  fetch(`http://localhost:5438/delete_signal/${entryId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to delete entry.");
+      }
+      console.log("Entry deleted successfully!");
+      // After successful deletion, you may want to refresh the entries table to reflect the changes
+      seeAllEntries();
+    })
+    .catch(error => {
+      console.error("Error deleting entry:", error);
+    });
+}
+    cellActions.appendChild(deleteButton);
+
+    row.appendChild(cell1);
+    row.appendChild(cell2);
+    row.appendChild(cell3);
+    row.appendChild(cell4);
+    row.appendChild(cell5);
+    row.appendChild(cell6);
+    row.appendChild(cell7);
+    row.appendChild(cellActions);
+    tableBody.appendChild(row);
+  });
+
+  
+
+  // Append the table header and body to the table
+  table.appendChild(tableHead);
+  table.appendChild(tableBody);
+
+  // Clear any previous entries display
+  const oldTable = document.querySelector('table');
+  if (oldTable) {
+    oldTable.remove();
+  }
+
+  // Append the new table to the document body
+  document.body.appendChild(table);
+}
+
+    // Function to cancel the edit
+    function cancelEdit() {
+      clearForm();
+      selectedRow = null;
+    }
+
+
+
+    // Function to clear the form fields
+    function clearForm() {
+      document.getElementById('point').value = '';
+      document.getElementById('a-pt').value = '';
+      document.getElementById('a-tc-ckt').value = '';
+      document.getElementById('b-pt').value = '';
+      document.getElementById('b-tc-ckt').value = '';
+      document.getElementById('char').value = '';
+      document.getElementById('projectID').value = ''; 
+    }
+
+    window.onload = function () {
+      autofillProjectID();
+      seeAllEntries();
+    };
+  </script>
+</body>
+</html>

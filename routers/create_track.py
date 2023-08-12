@@ -40,6 +40,11 @@ async def create_track(track: Track, db: Session = Depends(get_db)):
     project_model.name = track.name
     project_model.project_id=track.project_id
 
+    db.add(project_model)
+    db.commit()
+
+    return "track created"
+
 
 @router.put("/update_track/{track_id}", status_code=status.HTTP_200_OK)
 async def update_track(track_id: int, track: Track, db: Session = Depends(get_db)):
@@ -65,7 +70,3 @@ async def delete_track(track_id: int, db: Session = Depends(get_db)):
     return "Track deleted"
    
 
-    db.add(project_model)
-    db.commit()
-
-    return "track created"

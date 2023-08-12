@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Form Example</title>
- <style>
-   /* table {
+  <title>Route</title>
+  <style>
+    /*table {
       border-collapse: collapse;
       width: 100%;
     }
@@ -11,7 +11,6 @@
       border: 1px solid black;
       padding: 8px;
     }*/
-    
     table {
       border-collapse: collapse;
       width: 100%;
@@ -39,12 +38,11 @@
       text-align: center;
     }
     label{ 
-        width: 240px;
+        width: 160px;
         display: inline-block;
     }
+   
   </style>
-
-  
 </head>
 <body>
   <h2>Route Table</h2>
@@ -53,10 +51,12 @@
 
     
     <label for="prefix">Prefix:</label>
-    <input type="text" id="prefix" name="prefix" oninput="restrictToAlphabets(event)" required><br><br>
+    <input type="text" id="prefix" name="prefix" oninput="restrictToAlphabets(event)" required>
+    <span class="error-message">Only 3 alphanumeric values are allowed to be entered.</span><br><br>
 
     <label for="catogary">Catogary:</label>
     <select id="catogary" name="catogary" required>
+      <span class="error-message">Select any one of the following.</span>
       <option value="">Select an option</option>
       <option value="main">Main</option>
       <option value="cos">Cos</option>
@@ -64,29 +64,37 @@
       <option value="1P">1P</option>
       <option value="2P">2P</option>
       <option value="dist">Dist</option>
+    </select>
+    <span class="error-message">Please select an option from the list.</span><br><br>  
 
 
     </select><br><br>
 
 
     <label for="s-signal">S-Signal:</label>
-    <input type="number" id="s-signal" name="s-signal" oninput="restrictNegativeAndMoreThan999(event)"  required><br><br>
+    <input type="number" id="s-signal" name="s-signal" oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers from 1 to 999 are allowed to be entered.</span><br><br>
 
     <label for="x-signal">X-Signal:</label>
-    <input type="number" id="x-signal" name="x-signal" oninput="restrictNegativeAndMoreThan999(event)"  required><br><br>
+    <input type="number" id="x-signal" name="x-signal" oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers from 1 to 999 are allowed to be entered.</span><br><br>
   
 
     <label for="g-button">G-Button:</label>
-    <input type="text" id="g-button" name="g-button" oninput="restrictToAlphabets3(event)"  required><br><br>
+    <input type="text" id="g-button" name="g-button" oninput="restrictToAlphabets3(event)"  required>
+    <span class="error-message">Only  3 alphanumeric values are allowed to be entered.</span><br><br>
 
     <label for="route">Route:</label>
-    <input type="text" id="route" name="route" oninput="restrictToRoute(event)"  required><br><br>
+    <input type="text" id="route" name="route" oninput="restrictToRoute(event)"  required>
+    <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
 
     <label for="u-route">U-Route:</label>
-    <input type="text" id="u-route" name="u-route" oninput="restrictToRoute(event)"  required><br><br>
+    <input type="text" id="u-route" name="u-route" oninput="restrictToRoute(event)"  required>
+    <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
 
     <label for="number-input-yu">Number Input YU:</label>
-    <input type="number" id="number-input-yu" name="number-input-yu" required><br><br>
+    <input type="number" id="number-input-yu" name="number-input-yu" oninput="restrictNegativeAndMoreThan999(event)" required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
     <label for="option-input-yu">Option Input YU:</label>
     <select id="option-input-yu" name="option-input-yu">
       <option value="">Select an option</option>
@@ -100,7 +108,8 @@
 
     
     <label for="number-input-y">Number Input Y:</label>
-    <input type="number" id="number-input-y" name="number-input-y" required><br><br>
+    <input type="number" id="number-input-y" name="number-input-y"  oninput="restrictNegativeAndMoreThan999(event)" required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
     <label for="option-input-y">Option Input Y:</label>
     <select id="option-input-y" name="option-input-y">
       <option value="">Select an option</option>
@@ -113,7 +122,8 @@
 
 
     <label for="number-input-yy">Number Input YY:</label>
-    <input type="number" id="number-input-yy" name="number-input-y" required><br><br>
+    <input type="number" id="number-input-yy" name="number-input-y"  oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
     <label for="option-input-yy">Option Input YY:</label>
     <select id="option-input-yy" name="option-input-yy">
       <option value="">Select an option</option>
@@ -126,7 +136,8 @@
 
 
     <label for="number-input-g">Number Input G:</label>
-    <input type="number" id="number-input-g" name="number-input-g" required><br><br>
+    <input type="number" id="number-input-g" name="number-input-g"  oninput="restrictNegativeAndMoreThan999(event)"  required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
     <label for="option-input-g">Option Input G:</label>
     <select id="option-input-g" name="option-input-g">
       <option value="">Select an option</option>
@@ -181,31 +192,16 @@
       var id = 0
       
       
-     /*function restrictNegativeAndMoreThan999(event) {
+     function restrictNegativeAndMoreThan999(event) {
          console.log(event)
          var input = event.target;
          var inputValue = event.target.value;
          
-         if (inputValue > 999 || inputValue < 0) {
-        input.value = inputValue.substring(0, inputValue.length - 1);
-        alert("Please enter a number between 1 and 999.");
-      }
-     }*/
-
-     function restrictNegativeAndMoreThan999(event) {
-      var input = event.target;
-      var inputValue = input.value;
-      var numbersOnly = /^\d+$/;
-
-      if (!inputValue.match(numbersOnly)) {
-        input.value = input.value.replace(/[^0-9]/g, '');
-        alert("Only numbers are allowed in the S-Signal field.");
-      }
-      if (inputValue > 999 || inputValue < 0) {
-        input.value = inputValue.substring(0, inputValue.length - 1);
-        alert("Please enter a number between 1 and 999.");
-      }
-    }
+         if(inputValue > 999 || inputValue < 0) {
+            input.value = inputValue.substring(0,inputValue.length-1);
+            
+         }
+     }
       
     function restrictToAlphabets(event) {
         var input = event.target;
@@ -214,13 +210,11 @@
 
         if (!inputValue.match(alphabetsOnly)) {
           input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
-          
         }
         
         // Restrict the input length to 5 characters
         if (input.value.length > 5) {
           input.value = input.value.slice(0, 5);
-          alert("only 5 charecters are allowed.")
         }
       }
 
@@ -231,13 +225,11 @@
 
         if (!inputValue.match(alphabetsOnly)) {
           input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
-          
         }
         
         // Restrict the input length to 5 characters
         if (input.value.length > 3) {
           input.value = input.value.slice(0, 3);
-          alert("only 3 charecters are allowed.")
         }
       }
 
@@ -249,7 +241,6 @@
 
       if (!inputValue.match(routePattern)) {
         input.value = input.value.replace(/[^a-zA-Z0-9\s-]/g, '');
-
       }
 
       // Restrict the input length to 15 characters

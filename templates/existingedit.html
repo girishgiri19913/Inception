@@ -3,52 +3,58 @@
 <head>
   <title>Existing Projects</title>
   <style>
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
     }
 
-h2 {
-  margin-bottom: 20px;
-}
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-table {
-  width: 150%;
-  margin-bottom: 20px;
-  border-collapse: collapse;
-}
+    h2 {
+      margin-bottom: 20px;
+    }
 
-th, td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
 
-th {
-  background-color: #f2f2f2;
-}
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
 
-.project-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+    th {
+      background-color: #f2f2f2;
+    }
 
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
+    tbody tr:hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
 
-button:hover {
-  background-color: #45a049;
-}
+    button {
+      padding: 5px 10px;
+      font-size: 14px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -57,105 +63,157 @@ button:hover {
     <table>
       <thead>
         <tr>
+          <th>ID</th>
           <th>Project Name</th>
-          <th>Action</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="projectTableBody">
-        <!-- Saved project names will be dynamically added here -->
+        <!-- Project data will be dynamically added here -->
       </tbody>
     </table>
-    <button onclick="goBack()">Back</button>
   </div>
+
   <script>
-    function createProjectRow(projectName) {
-      var row = document.createElement("tr");
+    async function fetchProjects() {
+      try {
+        const response = await fetch("http://localhost:5438/projects"); // Assuming the API is served from the same domain
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects from the server.");
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        return [];
+      }
+    }
 
-      var projectNameCell = document.createElement("td");
-      projectNameCell.textContent = projectName;
+    function createProjectRow(project) {
+      const row = document.createElement("tr");
 
-      var actionCell = document.createElement("td");
+      const idCell = document.createElement("td");
+      idCell.textContent = project.id;
 
-      var renameButton = document.createElement("button");
-      renameButton.textContent = "Rename";
-      renameButton.addEventListener("click", function() {
-        renameProject(projectName);
+      const projectNameCell = document.createElement("td");
+      projectNameCell.textContent = project.project_name;
+
+      const actionsCell = document.createElement("td");
+
+      const updateButton = document.createElement("button");
+      updateButton.textContent = "Update";
+      updateButton.addEventListener("click", function () {
+        const newProjectName = prompt("Enter the new project name:", project.project_name);
+        if (newProjectName !== null && newProjectName.trim() !== "") {
+          updateProject(project.id, newProjectName);
+        }
       });
-      actionCell.appendChild(renameButton);
+      actionsCell.appendChild(updateButton);
 
-      var deleteButton = document.createElement("button");
+      const deleteButton = document.createElement("button");
       deleteButton.textContent = "Delete";
-      deleteButton.addEventListener("click", function() {
-        deleteProject(projectName);
+      deleteButton.addEventListener("click", function () {
+        const confirmDelete = confirm("Are you sure you want to delete this project?");
+        if (confirmDelete) {
+          deleteProject(project.id);
+        }
       });
-      actionCell.appendChild(deleteButton);
+      actionsCell.appendChild(deleteButton);
 
-      var goToProjectButton = document.createElement("button");
-      goToProjectButton.textContent = "Go to Project";
-      goToProjectButton.addEventListener("click", function() {
-        openProjectOptions(projectName);
+      const goToButton = document.createElement("button");
+      goToButton.textContent = "Go to Project";
+      goToButton.addEventListener("click", function () {
+        goToProjectOptions(project.id); 
       });
-      actionCell.appendChild(goToProjectButton);
+      actionsCell.appendChild(goToButton);
 
+      row.appendChild(idCell);
       row.appendChild(projectNameCell);
-      row.appendChild(actionCell);
+      row.appendChild(actionsCell);
 
       document.getElementById("projectTableBody").appendChild(row);
     }
 
-    function renameProject(projectName) {
-      var newProjectName = prompt("Enter the new project name:", projectName);
-      if (newProjectName !== null && newProjectName.trim() !== "") {
-        updateProjectName(projectName, newProjectName);
+    async function updateProject(projectId, newProjectName) {
+      try {
+        const token = getCookie("token"); // Get the token from the cookie
+
+        const response = await fetch(`http://localhost:5438/update_project/${projectId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ project_name: newProjectName })
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update the project.");
+        }
+
+        // Refresh the project list after successful update
+        loadProjects();
+      } catch (error) {
+        console.error("Error updating project:", error);
       }
     }
 
-    function updateProjectName(oldName, newName) {
-      var projects = JSON.parse(localStorage.getItem("projects")) || [];
-      var index = projects.indexOf(oldName);
-      if (index !== -1) {
-        projects[index] = newName;
-        localStorage.setItem("projects", JSON.stringify(projects));
-        refreshProjectTable();
+    async function deleteProject(projectId) {
+      try {
+        const token = getCookie("token"); // Get the token from the cookie
+
+        const response = await fetch(`http://localhost:5438/delete_project/${projectId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete the project.");
+        }
+
+        // Refresh the project list after successful delete
+        loadProjects();
+      } catch (error) {
+        console.error("Error deleting project:", error);
       }
     }
 
-    function deleteProject(projectName) {
-      if (confirm("Are you sure you want to delete this project?")) {
-        var projects = JSON.parse(localStorage.getItem("projects")) || [];
-        var index = projects.indexOf(projectName);
-        if (index !== -1) {
-          projects.splice(index, 1);
-          localStorage.setItem("projects", JSON.stringify(projects));
-          refreshProjectTable();
+    function getCookie(name) {
+      const cookieString = document.cookie;
+      const cookies = cookieString.split(";");
+
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          return decodeURIComponent(cookie.substring(name.length + 1));
         }
       }
+
+      return null; // Return null if the cookie with the specified name is not found
     }
 
-    function openProjectOptions(projectName) {
-      localStorage.setItem("selectedProject", projectName);
+    async function loadProjects() {
+      try {
+        // Clear existing rows
+        const projectTableBody = document.getElementById("projectTableBody");
+        projectTableBody.innerHTML = "";
+
+        const projects = await fetchProjects();
+        for (const project of projects) {
+          createProjectRow(project);
+        }
+      } catch (error) {
+        console.error("Error loading projects:", error);
+      }
+    }
+
+    function goToProjectOptions(projectId) {
+      localStorage.setItem("selectedProject", projectId); // Store the project ID in localStorage
       window.location.href = "projectoptions.html";
     }
 
-    function refreshProjectTable() {
-      var projectTableBody = document.getElementById("projectTableBody");
-      projectTableBody.innerHTML = "";
-      var projects = JSON.parse(localStorage.getItem("projects")) || [];
-      for (var i = 0; i < projects.length; i++) {
-        createProjectRow(projects[i]);
-      }
-    }
-
-    function goBack() {
-      window.location.href = "index.html";
-    }
-
-    function loadProjects() {
-      var projects = JSON.parse(localStorage.getItem("projects")) || [];
-      for (var i = 0; i < projects.length; i++) {
-        createProjectRow(projects[i]);
-      }
-    }
 
     // Call the function to load projects when the page loads
     loadProjects();

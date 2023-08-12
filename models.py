@@ -7,7 +7,6 @@ class Projects(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     project_name = Column(String, unique=True, index=True)
-    project_test = Column(String, unique=True, index=True)
     activation_status = Column(Boolean, default=True)
    
     routes = relationship("Route", back_populates="project")
@@ -18,9 +17,10 @@ class Route(Base):
     __tablename__ = "route"
 
     id = Column(Integer, primary_key=True, index=True)
+    prefix = Column(String)
     category = Column(String)
-    s_signal = Column(Integer)
-    x_signal = Column(Integer)
+    s_signal = Column(String)
+    x_signal = Column(String)
     g_button = Column(String)
     route = Column(String)
     u_route = Column(String)

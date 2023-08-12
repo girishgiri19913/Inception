@@ -55,5 +55,5 @@ async def delete_project(project_id: int, db: Session = Depends(get_db)):
     db.delete(project)
     db.commit()
 
-    return 'Project deleted'
+    return 'Project deleted'  
     

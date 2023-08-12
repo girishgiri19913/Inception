@@ -7,17 +7,78 @@
       border-collapse: collapse;
       width: 100%;
     }
+
     th, td {
       border: 1px solid black;
       padding: 8px;
     }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .form-label {
+      width: 180px;
+      text-align: left;
+      padding-right: 10px;
+    }
+
+    .form-input {
+      flex-grow: 3;
+      text-align: center;
+    }
+    label{ 
+        width: 160px;
+        display: inline-block;
+    }
+
+     /* The Modal (background) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  }
+
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+
+  /* Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
   </style>
 </head>
 <body>
   <h2>Signal Table</h2>
   <form id="registration-form">
     <label for="point">Point:</label>
-    <input type="number" id="point" name="point" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <input type="number" id="point" name="point" oninput="restrictNegativeAndMoreThan999(event)" required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
     <label for="a-pt">A-Point:</label> 
     <select id="a-pt" name="a-pt" required>
       <option value="">Select an option</option>
@@ -25,7 +86,8 @@
       <option value="trap">Trap</option>
     </select><br><br>
     <label for="a-tc-ckt">A-Track-ckt:</label>
-    <input type="text" id="a-tc-ckt" name="a-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <input type="text" id="a-tc-ckt" name="a-tc-ckt" oninput="restrictToAlphabets(event)" required>
+    <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
     <label for="b-pt">B-Point:</label> 
     <select id="b-pt" name="b-pt" required>
       <option value="">Select an option</option>
@@ -33,30 +95,66 @@
       <option value="trap">Trap</option>
     </select><br><br>
     <label for="b-tc-ckt">B-Track-ckt:</label>
-    <input type="text" id="b-tc-ckt" name="b-tc-ckt" oninput="restrictToAlphabets(event)" required><br><br>
+    <input type="text" id="b-tc-ckt" name="b-tc-ckt" oninput="restrictToAlphabets(event)" required>
+    <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
     <label for="char">Char:</label>
-    <input type="number" id="char" name="char" oninput="restrictNegativeAndMoreThan999(event)" required><br><br>
+    <input type="number" id="char" name="char" oninput="restrictNegativeAndMoreThan999(event)" required>
+    <span class="error-message">Only numbers are allowed to be entered.<br><br>
+    <label for="projectID">Project ID:</label>
+    <input type="number" id="projectID" name="projectID" readonly required><br><br>
     <button type="button" onclick="saveEntry()">Save</button>
     <button type="button" onclick="cancelEdit()">Cancel</button>
-  </form>
+    <h2>Registered Entries</h2><br><br>
 
-  <h2>Registered Entries</h2>
-  <table id="entries-table">
-    <tr>
-      <th>ID</th>
-      <th>Point</th>
-      <th>A Point</th>
-      <th>A Track Ckt</th>
-      <th>B Point</th>
-      <th>B Track Ckt</th>
-      <th>CHAR</th>
-      <th>Actions</th>
-    </tr>
-  </table>
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Edit Entry</h3>
+      <label for="modal-point">Point:</label>
+      <input type="number" id="modal-point" name="modal-point" oninput="restrictNegativeAndMoreThan999(event)" required>
+      <span class="error-message">Only numbers are allowed to be entered.<br><br>
+      <label for="modal-a-pt">A-Point:</label> 
+      <select id="modal-a-pt" name="modal-a-pt" required>
+        <option value="">Select an option</option>
+        <option value="point">Point</option>
+        <option value="trap">Trap</option>
+      </select><br><br>
+      <label for="modal-a-tc-ckt">A-Track-ckt:</label>
+      <input type="text" id="modal-a-tc-ckt" name="modal-a-tc-ckt" oninput="restrictToAlphabets(event)" required>
+      <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
+      <label for="modal-b-pt">B-Point:</label> 
+      <select id="modal-b-pt" name="modal-b-pt" required>
+        <option value="">Select an option</option>
+        <option value="point">Point</option>  
+        <option value="trap">Trap</option>
+      </select><br><br>
+      <label for="modal-b-tc-ckt">B-Track-ckt:</label>
+      <input type="text" id="modal-b-tc-ckt" name="modal-b-tc-ckt" oninput="restrictToAlphabets(event)" required>
+      <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
+      <label for="modal-char">Char:</label>
+      <input type="number" id="modal-char" name="modal-char" oninput="restrictNegativeAndMoreThan999(event)" required>
+      <span class="error-message">Only numbers are allowed to be entered.<br><br>
+      <input type="text" id="modal-signal-id" name="modal-signal-id" readonly required style="display: none;"><br><br>
+
+      <button type="button" onclick="saveUpdate()">Save</button>
+      <button type="button" onclick="closeModal()">Cancel</button>
+    </div>
+  
+   
+  </form>
 
   <script>
     var entries = [];
     var selectedRow = null;
+    var modal = document.getElementById("myModal");
+    var rowIdCounter = 1;
+
+
+    // Function to fetch the selected project name from localStorage
+    function getSelectedProjectID() {
+      return localStorage.getItem("selectedProject");
+    }
 
     function restrictNegativeAndMoreThan999(event) {
       var input = event.target;
@@ -82,144 +180,332 @@
       }
     }
 
-    function saveEntry() {
-      var point = document.getElementById('point').value;
-      var aPoint = document.getElementById('a-pt').value;
-      var aTrackCkt = document.getElementById('a-tc-ckt').value;
-      var bPoint = document.getElementById('b-pt').value;
-      var bTrackCkt = document.getElementById('b-tc-ckt').value;
-      var Char = document.getElementById('char').value;
+    
 
-      if (selectedRow) {
-        updateEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char);
+    function autofillProjectID() {
+      const selectedProjectID = getSelectedProjectID();
+      if (selectedProjectID) {
+        document.getElementById('projectID').value = selectedProjectID;
       } else {
-        addEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char);
+        console.error("No project selected.");
       }
-
-      clearForm();
     }
 
-    function addEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char) {
-      var id = entries.length + 1;
-      var table = document.getElementById('entries-table');
-      var newRow = table.insertRow(-1);
-      newRow.setAttribute('data-id', id);
-      newRow.insertCell(0).textContent = id;
-      newRow.insertCell(1).textContent = point;
-      newRow.insertCell(2).textContent = aPoint;
-      newRow.insertCell(3).textContent = aTrackCkt;
-      newRow.insertCell(4).textContent = bPoint;
-      newRow.insertCell(5).textContent = bTrackCkt;
-      newRow.insertCell(6).textContent = Char;
-      newRow.insertCell(7).innerHTML = '<button onclick="editEntry(this)">Edit</button> <button onclick="deleteEntry(this)">Delete</button>';
+    // Call the autofill function when the page loads
+    window.onload = autofillProjectID;
 
-      entries.push({
-        id: id,
-        point: point,
-        aPoint: aPoint,
-        aTrackCkt: aTrackCkt,
-        bPoint: bPoint,
-        bTrackCkt: bTrackCkt,
-        Char: Char
+    // Function to save the entry
+    function saveEntry() {
+      const point = document.getElementById('point').value;
+      const aPoint = document.getElementById('a-pt').value;
+      const aTrackCkt = document.getElementById('a-tc-ckt').value;
+      const bPoint = document.getElementById('b-pt').value;
+      const bTrackCkt = document.getElementById('b-tc-ckt').value;
+      const Char = document.getElementById('char').value;
+      const projectID = document.getElementById('projectID').value; 
+
+      // Create the entry object with the data
+      const entry = {
+        point: parseInt(point),
+        a_point: aPoint,
+        a_Track_point: aTrackCkt,
+        b_point: bPoint,
+        b_Track_point: bTrackCkt,
+        char: Char,
+        project_id: parseInt(projectID)
+      };
+
+      // Send HTTP POST request to create the signal
+      fetch("http://localhost:5438/create_signal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(entry)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to create signal.");
+        }
+        console.log("Signal created successfully!");
+        // Clear the form fields after successful creation
+        clearForm();
+      })
+      .catch(error => {
+        console.error("Error creating signal:", error);
       });
-
-      updateIDs();
-      saveEntries();
     }
 
-    function updateIDs() {
-      var table = document.getElementById('entries-table');
-      var rows = table.getElementsByTagName('tr');
-
-      for (var i = 1; i < rows.length; i++) {
-        var row = rows[i];
-        row.cells[0].textContent = i;
-        row.setAttribute('data-id', i);
-
-        var entry = entries.find(function (e) {
-          return e.id === parseInt(row.getAttribute('data-id'));
-        });
-
-        if (entry) {
-        entry.id = i;
-      }
-    }
+    window.onload = function () {
+  autofillProjectID();
+  seeAllEntries();
+};
+    
+function closeModal() {
+    modal.style.display = "none";
   }
 
-    
-            
-    function editEntry(button) {
-      var row = button.parentNode.parentNode;
-      var id = row.getAttribute('data-id');
-      var cells = row.cells;
-      var point = cells[1].textContent;
-      var aPoint = cells[2].textContent;
-      var aTrackCkt = cells[3].textContent;
-      var bPoint = cells[4].textContent;
-      var bTrackCkt = cells[5].textContent;
-      var Char = cells[6].textContent;
+  // Save the updated values when the "Save" button is clicked
+  function saveUpdate() {
+    const modalPoint = parseInt(document.getElementById("modal-point").value);
+    const modalAPoint = document.getElementById("modal-a-pt").value;
+    const modalATcCkt = document.getElementById("modal-a-tc-ckt").value;
+    const modalBPoint =document.getElementById("modal-b-pt").value;
+    const modalBTcCkt = document.getElementById("modal-b-tc-ckt").value;
+    const modalchar =document.getElementById("modal-char").value;
+    const signalId = document.getElementById("modal-signal-id").value;
+    // Hide the modal
+    modal.style.display = "none";
 
-      document.getElementById('point').value = point;
-      document.getElementById('a-pt').value = aPoint;
-      document.getElementById('a-tc-ckt').value = aTrackCkt;
-      document.getElementById('b-pt').value = bPoint;
-      document.getElementById('b-tc-ckt').value = bTrackCkt;
-      document.getElementById('char').value = Char;
+    // if (!selectedRow) {
+    //   console.error("No row selected for update.");
+    //   return;
+    // }
 
-      selectedRow = row;
+    // // Get the entry ID of the row to update
+    // const entryIdToUpdate = selectedRow.querySelector('td:first-child').textContent;
+
+    // Call the updateEntry function to save the changes
+    updateEntry(signalId, modalPoint, modalAPoint,modalATcCkt,modalBPoint,modalBTcCkt,modalchar);
+  }
+
+
+  function seeAllEntries() {
+    const selectedProjectID = getSelectedProjectID();
+
+    if (!selectedProjectID) {
+      console.error("No project selected.");
+      return;
     }
 
-    function updateEntry(point, aPoint, aTrackCkt, bPoint, bTrackCkt, Char) {
-      var cells = selectedRow.cells;
-      cells[1].textContent = point;
-      cells[2].textContent = aPoint;
-      cells[3].textContent = aTrackCkt;
-      cells[4].textContent = bPoint;
-      cells[5].textContent = bTrackCkt;
-      cells[6].textContent = Char;
+      
 
-      var id = selectedRow.getAttribute('data-id');
-      var entry = entries.find(function (e) {
-        return e.id === parseInt(id);
+      // Send HTTP GET request to fetch entries with the specific project ID
+      fetch(`http://localhost:5438/signals?project_id=${selectedProjectID}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch entries.");
+          }
+          return response.json();
+        })
+        .then(entriesData => {
+          // Process the fetched entriesData and display them on the webpage
+          displayEntries(entriesData);
+        })
+        .catch(error => {
+          console.error("Error fetching entries:", error);
+        });
+    }
+
+    function updateEntry(signalId, updatedPoint, updatedAPoint,updatedATcCkt,updatedBPoint,UpadtedBTcCkt,updatedchar) {
+    // ... (your existing updateEntry function code) ...
+
+    const updatedData = {
+      point: updatedPoint,
+      a_point: updatedAPoint,
+      a_Track_point : updatedATcCkt,
+      b_point: updatedBPoint,
+      b_Track_point : UpadtedBTcCkt,
+      char : updatedchar,
+      project_id: getSelectedProjectID(),
+      // Add any other properties you need to update
+    };
+    
+
+    // Send HTTP PUT request to update the specific entry based on entryId
+    fetch(`http://localhost:5438/update_signal/${signalId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update entry.");
+        }
+        console.log("Entry updated successfully!");
+        // After successful update, you may want to refresh the entries table to show the updated data
+        seeAllEntries();
+      })
+      .catch((error) => {
+        console.error("Error updating entry:", error);
       });
+  }
 
-      if (entry) {
-        entry.point = point;
-        entry.aPoint = aPoint;
-        entry.aTrackCkt = aTrackCkt;
-        entry.bPoint = bPoint;
-        entry.bTrackCkt = bTrackCkt;
-        entry.Char = Char;
-      }
+    function displayEntries(entriesData) {
+  const selectedProjectID = getSelectedProjectID();
 
-      selectedRow = null;
-      saveEntries();
-    }
+  if (!selectedProjectID) {
+    console.error("No project selected.");
+    return;
+  }
 
-    function deleteEntry(button) {
-      var row = button.parentNode.parentNode;
-      var id = row.getAttribute('data-id');
-      var index = entries.findIndex(function (e) {
-        return e.id === parseInt(id);
-      });
+  const filteredEntries = entriesData.filter(entry => entry.project_id === parseInt(selectedProjectID));
 
-      if (index !== -1) {
-        entries.splice(index, 1);
-        row.remove();
-        updateIDs();
-        saveEntries();
-      }
-    }
+  const table = document.createElement('table');
+  const tableHead = document.createElement('thead');
+  const tableBody = document.createElement('tbody');
+  
+  // Create table header row
+  const headerRow = document.createElement('tr');
+  const headerCell1 = document.createElement('th')
+  const headerCell2 = document.createElement('th');
+  const headerCell3 = document.createElement('th');
+  const headerCell4 = document.createElement('th');
+  const headerCell5 = document.createElement('th');
+  const headerCell6 = document.createElement('th');
+  const headerCell7 = document.createElement('th');
+  const headerCell8= document.createElement('th');
+  const headerCell9 = document.createElement('th');
+  headerCell1.textContent = 'Row ID';
+  headerCell2.textContent = 'Point';
+  headerCell3.textContent = 'A Point';
+  headerCell4.textContent = 'A Track Point';
+  headerCell5.textContent = 'B point';
+  headerCell6.textContent = 'B Track Point';
+  headerCell7.textContent = ' Char';
+  headerCell8.textContent = 'Project ID';
+  headerCell9.textContent = 'Actions';
+  headerRow.appendChild(headerCell1);
+  headerRow.appendChild(headerCell2);
+  headerRow.appendChild(headerCell3);
+  headerRow.appendChild(headerCell4);
+  headerRow.appendChild(headerCell5);
+  headerRow.appendChild(headerCell6);
+  headerRow.appendChild(headerCell7);
+  headerRow.appendChild(headerCell8);
+  headerRow.appendChild(headerCell9);
+  tableHead.appendChild(headerRow);
+
+  // Create table rows for each entry
+  filteredEntries.forEach(entry => {
+    const row = document.createElement('tr');
+    const cell1 = document.createElement('td');
+    const cell2 = document.createElement('td');
+    const cell3 = document.createElement('td');
+    const cell4 = document.createElement('td');
+    const cell5 = document.createElement('td');
+    const cell6 = document.createElement('td');
+    const cell7 = document.createElement('td');
+    const cell8 = document.createElement('td');
+    const cellActions = document.createElement('td');
+    cell1.textContent = rowIdCounter++;
+    cell2.textContent = entry.point;
+    cell3.textContent = entry.a_point;
+    cell4.textContent = entry.a_Track_point;
+    cell5.textContent = entry.b_point;
+    cell6.textContent = entry.b_Track_point;
+    cell7.textContent = entry.char;
+    cell8.textContent = entry.project_id;
+
+
+    const updateButton = document.createElement('button');
+    updateButton.textContent = 'Update';
+    updateButton.addEventListener('click', () => {
+      // ... (your existing updateButton click event listener code) ...
+
+      // ... (rest of your existing updateButton click event listener code) ...
+
+      // Show the modal when the "Update" button is clicked
+      showModal(entry.id, entry.point, entry.a_point,entry.a_Track_point,entry.b_point,entry.b_Track_point, entry.char);
+    });
+
+    const modal = document.getElementById("myModal");
+
+  // Get the <span> element that closes the modal
+  const span = document.getElementsByClassName("close")[0];
+
+  // Show the modal with the provided TC and Name values
+  function showModal(entryId,point,aPoint,aTrackCkt,bPoint,bTrackCkt,char) {
+    const modalPoint = document.getElementById("modal-point");
+    const modalAPoint = document.getElementById("modal-a-pt");
+    const modalATcCkt = document.getElementById("modal-a-tc-ckt");
+    const modalBPoint = document.getElementById("modal-b-pt");
+    const modalBTcCkt = document.getElementById("modal-b-tc-ckt");
+    const modalchar = document.getElementById("modal-char");
+    const signalId = document.getElementById("modal-signal-id");
+    modalPoint.value = point;
+    modalAPoint.value = aPoint;
+    modalATcCkt.value = aTrackCkt;
+    modalBPoint.value = bPoint;
+    modalBTcCkt.value = bTrackCkt;
+    modalchar.value =char;
+    signalId.value = entryId
+    // Show the modal
+    modal.style.display = "block";
+  }
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => {
+      // Call the function to delete the specific row
+      deleteEntry(entry.id); // Assuming there's an "id" property in the entry object representing the unique identifier in the database
+    });
+
 
     
-
+function deleteEntry(entryId) {
+  // Send HTTP DELETE request to delete the specific entry based on entryId
+  fetch(`http://localhost:5438/delete_signal/${entryId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to delete entry.");
+      }
+      console.log("Entry deleted successfully!");
+      // After successful deletion, you may want to refresh the entries table to reflect the changes
+      seeAllEntries();
+    })
+    .catch(error => {
+      console.error("Error deleting entry:", error);
+    });
+}
     
+    cellActions.appendChild(updateButton);
+    cellActions.appendChild(deleteButton);
 
+    row.appendChild(cell1);
+    row.appendChild(cell2);
+    row.appendChild(cell3);
+    row.appendChild(cell4);
+    row.appendChild(cell5);
+    row.appendChild(cell6);
+    row.appendChild(cell7);
+    row.appendChild(cell8);
+    row.appendChild(cellActions);
+    tableBody.appendChild(row);
+  });
+
+  
+
+  // Append the table header and body to the table
+  table.appendChild(tableHead);
+  table.appendChild(tableBody);
+
+  // Clear any previous entries display
+  const oldTable = document.querySelector('table');
+  if (oldTable) {
+    oldTable.remove();
+  }
+
+  // Append the new table to the document body
+  document.body.appendChild(table);
+}
+
+    // Function to cancel the edit
     function cancelEdit() {
       clearForm();
       selectedRow = null;
     }
 
+
+
+    // Function to clear the form fields
     function clearForm() {
       document.getElementById('point').value = '';
       document.getElementById('a-pt').value = '';
@@ -227,44 +513,10 @@
       document.getElementById('b-pt').value = '';
       document.getElementById('b-tc-ckt').value = '';
       document.getElementById('char').value = '';
+      
     }
 
-    function saveEntries() {
-      localStorage.setItem('entries', JSON.stringify(entries));
-    }
-
-    function loadEntries() {
-      var storedEntries = localStorage.getItem('entries');
-
-      if (storedEntries) {
-        entries = JSON.parse(storedEntries);
-
-        var table = document.getElementById('entries-table');
-        for (var i = 0; i < entries.length; i++) {
-          var entry = entries[i];
-          var id = entry.id;
-          var point = entry.point;
-          var aPoint = entry.aPoint;
-          var aTrackCkt = entry.aTrackCkt;
-          var bPoint = entry.bPoint;
-          var bTrackCkt = entry.bTrackCkt;
-          var Char = entry.Char;
-
-          var newRow = table.insertRow(-1);
-          newRow.setAttribute('data-id', id);
-          newRow.insertCell(0).textContent = id;
-          newRow.insertCell(1).textContent = point;
-          newRow.insertCell(2).textContent = aPoint;
-          newRow.insertCell(3).textContent = aTrackCkt;
-          newRow.insertCell(4).textContent = bPoint;
-          newRow.insertCell(5).textContent = bTrackCkt;
-          newRow.insertCell(6).textContent = Char;
-          newRow.insertCell(7).innerHTML = '<button onclick="editEntry(this)">Edit</button> <button onclick="deleteEntry(this)">Delete</button>';
-        }
-      }
-    }
-
-    loadEntries();
+   
   </script>
 </body>
 </html>

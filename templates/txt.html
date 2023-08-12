@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Route</title>
+  <title>Route Table</title>
   <style>
-    /*table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      border: 1px solid black;
-      padding: 8px;
-    }*/
     table {
       border-collapse: collapse;
       width: 100%;
@@ -31,7 +23,7 @@
       width: 180px;
       text-align: left;
       padding-right: 10px;
-    }
+    }          
 
     .form-input {
       flex-grow: 3;
@@ -41,43 +33,75 @@
         width: 160px;
         display: inline-block;
     }
-   
+
+    /* The Modal (background) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  }
+
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+
+  /* Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
   </style>
 </head>
 <body>
   <h2>Route Table</h2>
-  <form id="registration-form" onsubmit="addEntry(event)">
-   
-
+  <form id="registration-form">
     
     <label for="prefix">Prefix:</label>
-    <input type="text" id="prefix" name="prefix" oninput="restrictToAlphabets(event)" required>
+    <input type="text" id="prefix" name="prefix" oninput="restrictToAlphabets3(event)" required>
     <span class="error-message">Only 3 alphanumeric values are allowed to be entered.</span><br><br>
 
     <label for="catogary">Catogary:</label>
     <select id="catogary" name="catogary" required>
       <span class="error-message">Select any one of the following.</span>
       <option value="">Select an option</option>
-      <option value="main">Main</option>
-      <option value="cos">Cos</option>
-      <option value="block">Block</option>
+      <option value="main">MAIN</option>
+      <option value="cos">COS</option>
+      <option value="block">BLOCK</option>
       <option value="1P">1P</option>
       <option value="2P">2P</option>
-      <option value="dist">Dist</option>
+      <option value="dist">DIST</option>
     </select>
     <span class="error-message">Please select an option from the list.</span><br><br>  
 
 
-    </select><br><br>
-
-
     <label for="s-signal">S-Signal:</label>
-    <input type="number" id="s-signal" name="s-signal" oninput="restrictNegativeAndMoreThan999(event)"  required>
-    <span class="error-message">Only numbers from 1 to 999 are allowed to be entered.</span><br><br>
+    <input type="text" id="s-signal" name="s-signal" oninput="restrictToAlphabets3(event)"  required>
+    <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
 
     <label for="x-signal">X-Signal:</label>
-    <input type="number" id="x-signal" name="x-signal" oninput="restrictNegativeAndMoreThan999(event)"  required>
-    <span class="error-message">Only numbers from 1 to 999 are allowed to be entered.</span><br><br>
+    <input type="text" id="x-signal" name="x-signal" oninput="restrictToRoute(event)"  required>
+    <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
   
 
     <label for="g-button">G-Button:</label>
@@ -149,50 +173,143 @@
     </select><br><br>
 
 
-  
+    <!-- Add other form fields as per your requirement -->
 
+    <!-- New Project ID column -->
+    
+    <label for="projectID">Project ID:</label>
+    <input type="number" id="projectID" name="projectID" readonly required><br><br> <!-- Add readonly attribute -->
 
+    <button type="button" onclick="saveEntry()">Save</button>
+    <button type="button" onclick="cancelEdit()">Cancel</button>
 
+    <h2>Registered entries</h2><br><br>
 
-
-
-    <input type="submit" value="Submit">
   </form>
 
-  <h2>Registered Entries</h2>
-  <table id="entries-table">
-    <tr>
-      <th>ID</th>
-      <th>Prefix</th>
-      <th>Catogary</th>
-      <th>S-Siganl</th>
-      <th>X-Signal</th>
-      <th>G-Button</th>
-      <th>Route</th>
-      <th>U-Route</th>
-      <th>YU</th>
-      <th>Y</th>
-      <th>YY</th>
-      <th>G</th>
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Edit Entry</h3>
 
-
-
-
-
-
+        <label for="modal-prefix">Prefix:</label>
+        <input type="text" id="modal-prefix" name="modal-prefix" oninput="restrictToAlphabets3(event)" required>
+        <span class="error-message">Only 3 alphanumeric values are allowed to be entered.</span><br><br>
+    
+        <label for="modal-catogary">Catogary:</label>
+        <select id="modal-catogary" name="modal-catogary" required>
+          <span class="error-message">Select any one of the following.</span>
+          <option value="">Select an option</option>
+          <option value="main">MAIN</option>
+          <option value="cos">COS</option>
+          <option value="block">BLOCK</option>
+          <option value="1P">1P</option>
+          <option value="2P">2P</option>
+          <option value="dist">DIST</option>
+        </select>
+        <span class="error-message">Please select an option from the list.</span><br><br>  
+    
+    
+        <label for="modal-s-signal">S-Signal:</label>
+        <input type="text" id="modal-s-signal" name="modal-s-signal" oninput="restrictToAlphabets3(event)"  required>
+        <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
+    
+        <label for="modal-x-signal">X-Signal:</label>
+        <input type="text" id="modal-x-signal" name="modal-x-signal" oninput="restrictToRoute(event)"  required>
+        <span class="error-message">Only alphanumeric values are allowed to be entered.</span><br><br>
       
+    
+        <label for="modal-g-button">G-Button:</label>
+        <input type="text" id="modal-g-button" name="modal-g-button" oninput="restrictToAlphabets3(event)"  required>
+        <span class="error-message">Only  3 alphanumeric values are allowed to be entered.</span><br><br>
+    
+        <label for="modal-route">Route:</label>
+        <input type="text" id="modal-route" name="modal-route" oninput="restrictToRoute(event)"  required>
+        <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
+    
+        <label for="modal-u-route">U-Route:</label>
+        <input type="text" id="modal-u-route" name="modal-u-route" oninput="restrictToRoute(event)"  required>
+        <span class="error-message">Only 15 alphanumeric values with _,'' are allowed to be entered.</span><br><br>
+    
+        <label for="modal-number-input-yu">Number Input YU:</label>
+        <input type="number" id="modal-number-input-yu" name="modal-number-input-yu" oninput="restrictNegativeAndMoreThan999(event)" required>
+        <span class="error-message">Only numbers are allowed to be entered.<br><br>
+        <label for="modal-option-input-yu">Option Input YU:</label>
+        <select id="modal-option-input-yu" name="modal-option-input-yu">
+          <option value="">Select an option</option>
+          <option value="YU">YU</option>
+          <option value="Y">Y</option>
+          <option value="YY">YY</option>
+          <option value="G">G</option>
+          <option value="R">R</option>
+        </select><br><br>
+    
+    
+        
+        <label for="modal-number-input-y">Number Input Y:</label>
+        <input type="number" id="modal-number-input-y" name="modal-number-input-y"  oninput="restrictNegativeAndMoreThan999(event)" required>
+        <span class="error-message">Only numbers are allowed to be entered.<br><br>
+        <label for="modal-option-input-y">Option Input Y:</label>
+        <select id="modal-option-input-y" name="modal-option-input-y">
+          <option value="">Select an option</option>
+          <option value="YU">YU</option>
+          <option value="Y">Y</option>
+          <option value="YY">YY</option>
+          <option value="G">G</option>
+          <option value="R">R</option>
+        </select><br><br>
+    
+    
+        <label for="modal-number-input-yy">Number Input YY:</label>
+        <input type="number" id="modal-number-input-yy" name="modal-number-input-y"  oninput="restrictNegativeAndMoreThan999(event)"  required>
+        <span class="error-message">Only numbers are allowed to be entered.<br><br>
+        <label for="modal-option-input-yy">Option Input YY:</label>
+        <select id="modal-option-input-yy" name="modal-option-input-yy">
+          <option value="">Select an option</option>
+          <option value="YU">YU</option>
+          <option value="Y">Y</option>
+          <option value="YY">YY</option>
+          <option value="G">G</option>
+          <option value="R">R</option>
+        </select><br><br>
+    
+    
+        <label for="modal-number-input-g">Number Input G:</label>
+        <input type="number" id="modal-number-input-g" name="modal-number-input-g"  oninput="restrictNegativeAndMoreThan999(event)"  required>
+        <span class="error-message">Only numbers are allowed to be entered.<br><br>
+        <label for="modal-option-input-g">Option Input G:</label>
+        <select id="modal-option-input-g" name="modal-option-input-g">
+          <option value="">Select an option</option>
+          <option value="YU">YU</option>
+          <option value="Y">Y</option>
+          <option value="YY">YY</option>
+          <option value="G">G</option>
+          <option value="R">R</option>
+        </select><br><br>
+        
 
+        <input type="text" id="modal-route-id" name="modal-route-id" readonly required style="display: none;"><br><br>
 
-
-    </tr>
-  </table>
+      <button type="button" onclick="saveUpdate()">Save</button>
+      <button type="button" onclick="closeModal()">Cancel</button>
+    
+    </div>
+  </div>
 
   <script>
-      var ids = []
-      var id = 0
-      
-      
-     function restrictNegativeAndMoreThan999(event) {
+
+    var entries = [];
+    var selectedRow = null;
+    var modal = document.getElementById("myModal");
+    
+
+    function getSelectedProjectID() {
+      return localStorage.getItem("selectedProject");
+    }
+
+
+    function restrictNegativeAndMoreThan999(event) {
          console.log(event)
          var input = event.target;
          var inputValue = event.target.value;
@@ -237,10 +354,10 @@
       function restrictToRoute(event) {
       var input = event.target;
       var inputValue = input.value;
-      var routePattern = /^[a-zA-Z0-9\s-]+$/;
+      var routePattern = /^[a-zA-Z0-9\s_]+$/;
 
       if (!inputValue.match(routePattern)) {
-        input.value = input.value.replace(/[^a-zA-Z0-9\s-]/g, '');
+        input.value = input.value.replace(/[^a-zA-Z0-9\s_]/g, '');
       }
 
       // Restrict the input length to 15 characters
@@ -249,98 +366,466 @@
       }
     }
     
-    function addEntry(event) {
-      event.preventDefault();
-      
-      // Retrieve form values
-      id = id + 1
-      var prefix =document.getElementById('prefix').value;
-      var catogary = document.getElementById('catogary').value;
-      
-      var sSiganl =document.getElementById('s-signal').value;
-      var xSiganl =document.getElementById('x-signal').value;
-      var gButton =document.getElementById('g-button').value;
-      var route =document.getElementById('route').value;
-      var uRoute =document.getElementById('u-route').value;
-      var numberInputYU = document.getElementById('number-input-yu').value;
-      var optionInputYU = document.getElementById('option-input-yu').value;
-      var numberInputY = document.getElementById('number-input-y').value;
-      var optionInputY = document.getElementById('option-input-y').value;
-      var numberInputYY = document.getElementById('number-input-yy').value;
-      var optionInputYY = document.getElementById('option-input-yy').value;
-      var numberInputG= document.getElementById('number-input-g').value;
-      var optionInputG = document.getElementById('option-input-g').value;
-
-
-      
-      // Append values to the table
-      var table = document.getElementById('entries-table');
-      var newRow = table.insertRow(-1);
-      var cell1 = newRow.insertCell(0);
-      var cell2 = newRow.insertCell(1);
-      var cell3 = newRow.insertCell(2);
-      var cell4 = newRow .insertCell(3);
-      var cell5 = newRow .insertCell(4);
-      var cell6 = newRow .insertCell(5);
-      var cell7= newRow .insertCell(6);
-      var cell8= newRow .insertCell(7);
-      var cell9 = newRow.insertCell(8);
-      var cell10= newRow.insertCell(9);
-      var cell11= newRow.insertCell(10);
-      var cell12= newRow.insertCell(11);
-
-
-
-
-      // Combine the two input values
-      var YU = numberInputYU;
-      if (optionInputYU) {
-       YU += optionInputYU;
+    function autofillProjectID() {
+      const selectedProjectID = getSelectedProjectID();
+      if (selectedProjectID) {
+        document.getElementById('projectID').value = selectedProjectID;
+      } else {
+        console.error("No project selected.");
       }
-
-      var Y = numberInputY;
-      if (optionInputY) {
-       Y += optionInputY;
-      }
-
-      var YY = numberInputYY;
-      if (optionInputYY) {
-       YY += optionInputYY;
-      }
-
-      var G = numberInputG;
-      if (optionInputG) {
-       G += optionInputG;
-      }
-
-
-
-
-      cell1.innerHTML = id;
-      cell2.innerHTML = prefix;
-      cell3.innerHTML = catogary;
-      cell4.innerHTML = sSiganl;
-      cell5.innerHTML = xSiganl;
-      cell6.innerHTML = gButton;
-      cell7.innerHTML = route;
-      cell8.innerHTML = uRoute;
-      cell9.innerHTML = YU;
-      cell10.innerHTML = Y;
-      cell11.innerHTML = YY;
-      cell12.innerHTML = G;
-
-
-
-
-
-
-
-
-
-      
-      // Reset form
-      document.getElementById('registration-form').reset();
     }
+
+    // Call the autofill function when the page loads
+    window.onload = autofillProjectID;
+
+
+
+    // Function to save the route
+    function saveEntry(){
+      const prefix = document.getElementById('prefix').value;
+      const category = document.getElementById('catogary').value;
+      const sSignal = document.getElementById('s-signal').value;
+      const xSiganl =document.getElementById('x-signal').value;
+      const gButton =document.getElementById('g-button').value;
+      const route =document.getElementById('route').value;
+      const uRoute =document.getElementById('u-route').value;
+      const numberInputYU = document.getElementById('number-input-yu').value;
+      const optionInputYU = document.getElementById('option-input-yu').value;
+      const numberInputY = document.getElementById('number-input-y').value;
+      const optionInputY = document.getElementById('option-input-y').value;
+      const numberInputYY = document.getElementById('number-input-yy').value;
+      const optionInputYY = document.getElementById('option-input-yy').value;
+      const numberInputG= document.getElementById('number-input-g').value;
+      const optionInputG = document.getElementById('option-input-g').value;
+      const projectID = document.getElementById('projectID').value;
+
+      // Create the route object with the data
+      const entry = {
+        
+        prefix: prefix,
+        category: category,
+        s_signal : sSignal,
+        x_signal: xSiganl,
+        g_button: gButton,
+        route: route,
+        u_route: uRoute,
+        number_input_yu: parseInt(numberInputYU),
+        option_input_yu: optionInputYU,
+        number_input_y: parseInt(numberInputY),
+        option_input_y: optionInputY,
+        number_input_yy: parseInt(numberInputYY),
+        option_input_yy: optionInputYY,
+        number_input_g: parseInt(numberInputG),
+        option_input_g: optionInputG,
+        project_id: parseInt(projectID)
+      };
+
+      // Send HTTP POST request to create the route
+      fetch("http://localhost:5438/create_route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(entry)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to create route.");
+        }
+        console.log("Route created successfully!");
+        // Clear the form fields after successful creation
+        clearForm();
+      })
+      .catch(error => {
+        console.error("Error creating route:", error);
+      });
+    }
+
+    window.onload = function () {
+  autofillProjectID();
+  seeAllEntries();
+};
+    
+function closeModal() {
+    modal.style.display = "none";
+  }
+ 
+
+  // Save the updated values when the "Save" button is clicked
+  function saveUpdate() {
+    const modalPrefix = document.getElementById("modal-prefix").value;
+    const modalCategory = document.getElementById("modal-catogary").value;
+    const modalSSignal = document.getElementById("modal-s-signal").value;
+    const modalXSignal =document.getElementById("modal-x-signal").value;
+    const modalGButton = document.getElementById("modal-g-button").value;
+    const modalRoute =document.getElementById("modal-route").value;
+    const modalURoute =document.getElementById("modal-u-route").value;
+    const modalNumberInputYu =document.getElementById("modal-number-input-yu").value;
+    const modalOptionInputYu =document.getElementById("modal-number-input-yu").value;
+    const modalNumberInputY =document.getElementById("modal-number-input-yu").value;
+    const modalOptionInputY =document.getElementById("modal-number-input-yu").value;
+    const modalNumberInputYy =document.getElementById("modal-number-input-yu").value;
+    const modalOptionInputYy =document.getElementById("modal-number-input-yu").value;
+    const modalNumberInputG =document.getElementById("modal-number-input-yu").value;
+    const modalOptionInputG =document.getElementById("modal-number-input-yu").value;
+    const routeId = document.getElementById("modal-route-id").value;
+    // Hide the modal
+    modal.style.display = "none";
+
+    // if (!selectedRow) {
+    //   console.error("No row selected for update.");
+    //   return;
+    // }
+
+    // // Get the entry ID of the row to update
+    // const entryIdToUpdate = selectedRow.querySelector('td:first-child').textContent;
+
+    // Call the updateEntry function to save the changes
+    updateEntry(routeId, modalPrefix, modalCategory,modalSSignal,modalXSignal,modalGButton,modalRoute,modalURoute,modalNumberInputYu,modalOptionInputYu,modalNumberInputY,modalOptionInputY,modalNumberInputYy,
+    modalOptionInputYy, modalNumberInputG,modalOptionInputG);
+  }
+
+
+    function seeAllEntries() {
+      const selectedProjectID = getSelectedProjectID();
+
+      if (!selectedProjectID) {
+        console.error("No project selected.");
+        return;
+      }
+
+      // Send HTTP GET request to fetch entries with the specific project ID
+      fetch(`http://localhost:5438/routes?project_id=${selectedProjectID}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch entries.");
+          }
+          return response.json();
+        })
+        .then(entriesData => {
+          // Process the fetched entriesData and display them on the webpage
+          displayEntries(entriesData);
+        })
+        .catch(error => {
+          console.error("Error fetching entries:", error);
+        });
+    }
+
+
+    function updateEntry(routeId, updatedPrefix, updatedCategory,updatedSSignal,updatedXSignal,upadtedGButton,updatedRoute,updatedURoute,updatedNumberInputYu,updatedOptionInputYu,updatedNumberInputY,
+    updatedOptionInputY,updatedNumberInputYy,updatedOptionInputYy,updatedNumberInputG,updatedOptionInputG) {
+    // ... (your existing updateEntry function code) ...
+
+    const updatedData = {
+      prefix: updatedPrefix,
+      category: updatedCategory,
+      s_signal: updatedSSignal,
+      x_signal: updatedXSignal,
+      g_button: upadtedGButton,
+      route: updatedURoute,
+      u_route: updatedURoute,
+      number_input_yu: updatedNumberInputYu,
+      option_input_yu: updatedOptionInputYu,
+      number_input_y: updatedNumberInputY,
+      option_input_y: updatedOptionInputY,
+      number_input_yy: updatedNumberInputYy,
+      option_input_yy: updatedOptionInputYy,
+      number_input_g: updatedNumberInputG,
+      option_input_g: updatedOptionInputG,
+      project_id: getSelectedProjectID(),
+      // Add any other properties you need to update
+    };
+    
+
+    // Send HTTP PUT request to update the specific entry based on entryId
+    fetch(`http://localhost:5438/update_route/${routeId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update entry.");
+        }
+        console.log("Entry updated successfully!");
+        // After successful update, you may want to refresh the entries table to show the updated data
+        seeAllEntries();
+      })
+      .catch((error) => {
+        console.error("Error updating entry:", error);
+      });
+  }
+
+    function displayEntries(entriesData) {
+  const selectedProjectID = getSelectedProjectID();
+
+  if (!selectedProjectID) {
+    console.error("No project selected.");
+    return;
+  }
+
+  const filteredEntries = entriesData.filter(entry => entry.project_id === parseInt(selectedProjectID));
+
+  const table = document.createElement('table');
+  const tableHead = document.createElement('thead');
+  const tableBody = document.createElement('tbody');
+
+  
+  // Create table header row
+  const headerRow = document.createElement('tr');
+  const headerCell1 = document.createElement('th');
+  const headerCell2 = document.createElement('th');
+  const headerCell3 = document.createElement('th');
+  const headerCell4 = document.createElement('th');
+  const headerCell5 = document.createElement('th');
+  const headerCell6 = document.createElement('th');
+  const headerCell7= document.createElement('th');
+  const headerCell8= document.createElement('th');
+  const headerCell9= document.createElement('th');
+  const headerCell10= document.createElement('th');
+  const headerCell11= document.createElement('th');
+  const headerCell12= document.createElement('th');
+  const headerCell13= document.createElement('th');
+  const headerCell14= document.createElement('th');
+  const headerCell15= document.createElement('th');
+  const headerCell16= document.createElement('th');
+  const headerCell17= document.createElement('th');
+
+
+  headerCell1.textContent = 'Prefix';
+  headerCell2.textContent = ' Category';
+  headerCell3.textContent = 'S signal';
+  headerCell4.textContent = 'X Signal';
+  headerCell5.textContent = 'G Button';
+  headerCell6.textContent = ' Route';
+  headerCell7.textContent = 'U Route';
+  headerCell8.textContent = "Number Input YU"
+  headerCell9.textContent = "Option Input YU"
+  headerCell10.textContent = "Number Input Y"
+  headerCell11.textContent = "Option Input YY"
+  headerCell12.textContent = "Number Input YY "
+  headerCell13.textContent = "Option Input YY"
+  headerCell14.textContent = "Number Input G"
+  headerCell15.textContent = "Option Input G"
+  headerCell16.textContent = 'Project ID'
+  headerCell17.textContent = 'Actions'
+
+  headerRow.appendChild(headerCell1);
+  headerRow.appendChild(headerCell2);
+  headerRow.appendChild(headerCell3);
+  headerRow.appendChild(headerCell4);
+  headerRow.appendChild(headerCell5);
+  headerRow.appendChild(headerCell6);
+  headerRow.appendChild(headerCell7);
+  headerRow.appendChild(headerCell8);
+  headerRow.appendChild(headerCell9);
+  headerRow.appendChild(headerCell10);
+  headerRow.appendChild(headerCell11);
+  headerRow.appendChild(headerCell12);
+  headerRow.appendChild(headerCell13);
+  headerRow.appendChild(headerCell14);
+  headerRow.appendChild(headerCell15);
+  headerRow.appendChild(headerCell16);
+  headerRow.appendChild(headerCell17);
+
+  tableHead.appendChild(headerRow);
+
+  // Create table rows for each entry
+  filteredEntries.forEach(entry => {
+    const row = document.createElement('tr');
+    const cell1 = document.createElement('td');
+    const cell2 = document.createElement('td');
+    const cell3 = document.createElement('td');
+    const cell4 = document.createElement('td');
+    const cell5 = document.createElement('td');
+    const cell6 = document.createElement('td');
+    const cell7 = document.createElement('td');
+    const cell8 = document.createElement('td');
+    const cell9 = document.createElement('td');
+    const cell10 = document.createElement('td');
+    const cell11 = document.createElement('td');
+    const cell12 = document.createElement('td');
+    const cell13 = document.createElement('td');
+    const cell14 = document.createElement('td');
+    const cell15 = document.createElement('td');
+    const cell16 = document.createElement('td');
+    const cellActions = document.createElement('td');
+    cell1.textContent = entry.prefix;
+    cell2.textContent = entry.category;
+    cell3.textContent = entry.s_signal;
+    cell4.textContent = entry.x_signal;
+    cell5.textContent = entry.g_button;
+    cell6.textContent = entry.route;
+    cell7.textContent = entry.u_route;
+    cell8.textContent = entry.number_input_yu;
+    cell9.textContent = entry.option_input_yu;
+    cell10.textContent = entry.number_input_y;
+    cell11.textContent = entry.option_input_y;
+    cell12.textContent = entry.number_input_yy;
+    cell13.textContent = entry.option_input_yy;
+    cell14.textContent = entry.number_input_g;
+    cell15.textContent = entry.option_input_g;
+    cell16.textContent = entry.project_id;
+
+    const updateButton = document.createElement('button');
+    updateButton.textContent = 'Update';
+    updateButton.addEventListener('click', () => {
+      // ... (your existing updateButton click event listener code) ...
+
+      // ... (rest of your existing updateButton click event listener code) ...
+
+      // Show the modal when the "Update" button is clicked
+      showModal(entry.id, entry.prefix, entry.category,entry.s_signal,entry.x_signal,entry.g_button, entry.route,entry.u_route,entry.number_input_yu,entry.option_input_yu,entry.number_input_y,entry.option_input_y,
+      entry.number_input_yy,entry.option_input_yy,entry.number_input_g,entry.option_input_g);
+    });
+
+    const modal = document.getElementById("myModal");
+
+  // Get the <span> element that closes the modal
+  const span = document.getElementsByClassName("close")[0];
+
+  // Show the modal with the provided TC and Name values
+  function showModal(entryId,prefix,category,sSignal,xSiganl,gButton,route,uRoute,numberInputYU,optionInputYU,numberInputY,optionInputY,numberInputYY,optionInputYY,numberInputG,optionInputG ) {
+    const modalPrefix = document.getElementById("modal-prefix");
+    const modalCategory= document.getElementById("modal-catogary");
+    const modalSSignal = document.getElementById("modal-s-signal");
+    const modalXSignal = document.getElementById("modal-x-signal");
+    const modalGButton = document.getElementById("modal-g-button");
+    const modalRoute = document.getElementById("modal-route");
+    const modalURoute = document.getElementById("modal-u-route");
+    const modalNumberInputYu = document.getElementById("modal-number-input-yu");
+    const modalOptionInputYu = document.getElementById("modal-option-input-yu");
+    const modalNumberInputY = document.getElementById("modal-number-input-y");
+    const modalOptionInputY = document.getElementById("modal-option-input-y");
+    const modalNumberInputYy = document.getElementById("modal-number-input-yy");
+    const modalOptionInputYy = document.getElementById("modal-option-input-yy");
+    const modalNumberInputG = document.getElementById("modal-number-input-g");
+    const modalOptionInputG = document.getElementById("modal-option-input-g");
+
+    const routeId = document.getElementById("modal-route-id");
+    modalPrefix.value = prefix;
+    modalCategory.value = category;
+    modalSSignal.value = sSignal;
+    modalXSignal.value = xSiganl;
+    modalGButton.value = gButton;
+    modalRoute.value =route;
+    modalURoute.value =uRoute;
+    modalNumberInputYu.value =numberInputYU;
+    modalOptionInputYu.value =optionInputYU;
+    modalNumberInputY.value =numberInputY;
+    modalOptionInputY.value =optionInputY;
+    modalNumberInputYy.value =numberInputYY;
+    modalOptionInputYy.value =optionInputYY;
+    modalNumberInputG.value =numberInputG;
+    modalOptionInputG.value = optionInputG;
+
+    routeId.value = entryId
+    // Show the modal
+    modal.style.display = "block";
+  }
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => {
+      // Call the function to delete the specific row
+      deleteEntry(entry.id); // Assuming there's an "id" property in the entry object representing the unique identifier in the database
+    });
+
+
+    
+function deleteEntry(entryId) {
+  // Send HTTP DELETE request to delete the specific entry based on entryId
+  fetch(`http://localhost:5438/delete_route/${entryId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to delete entry.");
+      }
+      console.log("Entry deleted successfully!");
+      // After successful deletion, you may want to refresh the entries table to reflect the changes
+      seeAllEntries();
+    })
+    .catch(error => {
+      console.error("Error deleting entry:", error);
+    });
+}
+    
+    cellActions.appendChild(updateButton);
+    cellActions.appendChild(deleteButton);
+
+
+    
+    row.appendChild(cell1);
+    row.appendChild(cell2);
+    row.appendChild(cell3);
+    row.appendChild(cell4);
+    row.appendChild(cell5);
+    row.appendChild(cell6);
+    row.appendChild(cell7);
+    row.appendChild(cell8);
+    row.appendChild(cell9);
+    row.appendChild(cell10);
+    row.appendChild(cell11);
+    row.appendChild(cell12);
+    row.appendChild(cell13);
+    row.appendChild(cell14);
+    row.appendChild(cell15);
+    row.appendChild(cell16);
+    row.appendChild(cellActions);
+    tableBody.appendChild(row);
+  });
+
+  // Append the table header and body to the table
+  table.appendChild(tableHead);
+  table.appendChild(tableBody);
+
+  // Clear any previous entries display
+  const oldTable = document.querySelector('table');
+  if (oldTable) {
+    oldTable.remove();
+  }
+
+  // Append the new table to the document body
+  document.body.appendChild(table);
+}
+
+
+    // Function to cancel the edit
+    function cancelEdit() {
+      clearForm();
+      selectedRow = null;
+    }
+    
+
+    // Function to clear the form fields
+    function clearForm() {
+      document.getElementById('prefix').value = '';
+      document.getElementById('catogary').value = '';
+      document.getElementById('s-signal').value = '';
+      document.getElementById('x-signal').value = '';
+      document.getElementById('g-button').value = '';
+      document.getElementById('route').value = '';
+      document.getElementById('u-route').value= '';
+      document.getElementById('number-input-yu').value ='';
+      document.getElementById('option-input-yu').value ='';
+      document.getElementById('number-input-y').value = '';
+      document.getElementById('option-input-y').value = '';
+      document.getElementById('number-input-yy').value = '';
+      document.getElementById('option-input-yy').value = '';
+      document.getElementById('number-input-g').value = '';
+      document.getElementById('option-input-g').value = '';
+      document.getElementById('projectID').value = ''; // Clear projectID field
+
+      // Clear other form fields here
+    }
+
+    
   </script>
 </body>
 </html>

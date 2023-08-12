@@ -34,11 +34,21 @@
 <body>
   <div class="container">
     <h2>PROJECTS</h2>
-    <button onclick="goToProjects('new')">Create te One</button>
+    <button onclick="goToProjects('new')">Create new One</button>
     <button onclick="goToProjects('existing')">Existing</button>
   </div>
 
   <script>
+
+function setCookie(name, value, daysToExpire) {
+  const date = new Date();
+  date.setTime(date.getTime() + (daysToExpire * 24 * 60 * 60 * 1000));
+  const expires = "expires=" + date.toUTCString();
+  document.cookie = name + "=" + value + "; " + expires + "; path=/";
+}
+
+
+
 
      // Initialize Keycloak
      var keycloak = new Keycloak({
@@ -58,6 +68,7 @@
 
           // Use tokens for subsequent requests or to control access
           console.log('Access Token:', accessToken);
+          setCookie("token",accessToken, 7)
           console.log('ID Token:', idToken);
           console.log('Refresh Token:', refreshToken);
         }
